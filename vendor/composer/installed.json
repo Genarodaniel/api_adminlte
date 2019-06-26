@@ -1065,18 +1065,73 @@
         "description": "Highlight PHP code in terminal"
     },
     {
-        "name": "laravel/framework",
-        "version": "v5.8.24",
-        "version_normalized": "5.8.24.0",
+        "name": "jeroennoten/laravel-adminlte",
+        "version": "v1.25.1",
+        "version_normalized": "1.25.1.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/laravel/framework.git",
-            "reference": "bb2a0afef35f508f77c049c51f04087a14de0055"
+            "url": "https://github.com/jeroennoten/Laravel-AdminLTE.git",
+            "reference": "4a6de826c488cfff01d673ed87aa35f7af402374"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/laravel/framework/zipball/bb2a0afef35f508f77c049c51f04087a14de0055",
-            "reference": "bb2a0afef35f508f77c049c51f04087a14de0055",
+            "url": "https://api.github.com/repos/jeroennoten/Laravel-AdminLTE/zipball/4a6de826c488cfff01d673ed87aa35f7af402374",
+            "reference": "4a6de826c488cfff01d673ed87aa35f7af402374",
+            "shasum": ""
+        },
+        "require": {
+            "laravel/framework": "~5.1.12|~5.2.0|~5.3.0|~5.4.0|~5.5.0|~5.6.0|~5.7.0|~5.8.0",
+            "php": ">=5.5.9"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~4.0"
+        },
+        "time": "2019-03-10T09:17:09+00:00",
+        "type": "library",
+        "extra": {
+            "laravel": {
+                "providers": [
+                    "JeroenNoten\\LaravelAdminLte\\ServiceProvider"
+                ]
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "JeroenNoten\\LaravelAdminLte\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Jeroen Noten",
+                "email": "jeroennoten@me.com"
+            }
+        ],
+        "description": "Easy AdminLTE integration with Laravel",
+        "keywords": [
+            "AdminLTE",
+            "admin",
+            "administrator",
+            "laravel"
+        ]
+    },
+    {
+        "name": "laravel/framework",
+        "version": "v5.8.26",
+        "version_normalized": "5.8.26.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/laravel/framework.git",
+            "reference": "1d8ec9afdedc79314c18715056b8143d7e1fac31"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/laravel/framework/zipball/1d8ec9afdedc79314c18715056b8143d7e1fac31",
+            "reference": "1d8ec9afdedc79314c18715056b8143d7e1fac31",
             "shasum": ""
         },
         "require": {
@@ -1179,7 +1234,7 @@
             "symfony/psr-http-message-bridge": "Required to use PSR-7 bridging features (^1.1).",
             "wildbit/swiftmailer-postmark": "Required to use Postmark mail driver (^3.0)."
         },
-        "time": "2019-06-19T16:40:24+00:00",
+        "time": "2019-06-25T16:20:51+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -1823,17 +1878,17 @@
     },
     {
         "name": "nesbot/carbon",
-        "version": "2.19.2",
-        "version_normalized": "2.19.2.0",
+        "version": "2.20.0",
+        "version_normalized": "2.20.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/briannesbitt/Carbon.git",
-            "reference": "adcad3f3af52d0ad4ad7b05f43aa58243b6ca67b"
+            "reference": "bc671b896c276795fad8426b0aa24e8ade0f2498"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/adcad3f3af52d0ad4ad7b05f43aa58243b6ca67b",
-            "reference": "adcad3f3af52d0ad4ad7b05f43aa58243b6ca67b",
+            "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/bc671b896c276795fad8426b0aa24e8ade0f2498",
+            "reference": "bc671b896c276795fad8426b0aa24e8ade0f2498",
             "shasum": ""
         },
         "require": {
@@ -1849,7 +1904,7 @@
             "phpunit/phpunit": "^7.5 || ^8.0",
             "squizlabs/php_codesniffer": "^3.4"
         },
-        "time": "2019-06-07T09:56:45+00:00",
+        "time": "2019-06-25T10:00:57+00:00",
         "type": "library",
         "extra": {
             "laravel": {
@@ -2430,17 +2485,17 @@
     },
     {
         "name": "phpseclib/phpseclib",
-        "version": "2.0.19",
-        "version_normalized": "2.0.19.0",
+        "version": "2.0.20",
+        "version_normalized": "2.0.20.0",
         "source": {
             "type": "git",
             "url": "https://github.com/phpseclib/phpseclib.git",
-            "reference": "d2085db7b7394baa071a69c8f9159723c250f2ba"
+            "reference": "d6819a55b05e123db1e881d8b230d57f912126be"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/d2085db7b7394baa071a69c8f9159723c250f2ba",
-            "reference": "d2085db7b7394baa071a69c8f9159723c250f2ba",
+            "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/d6819a55b05e123db1e881d8b230d57f912126be",
+            "reference": "d6819a55b05e123db1e881d8b230d57f912126be",
             "shasum": ""
         },
         "require": {
@@ -2458,7 +2513,7 @@
             "ext-mcrypt": "Install the Mcrypt extension in order to speed up a few other cryptographic operations.",
             "ext-openssl": "Install the OpenSSL extension in order to speed up a wide variety of cryptographic operations."
         },
-        "time": "2019-06-20T03:34:11+00:00",
+        "time": "2019-06-23T16:33:11+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
