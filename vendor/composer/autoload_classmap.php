@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'App\\API\\ApiError' => $baseDir . '/app/API/ApiError.php',
+    'App\\Condominium' => $baseDir . '/app/Condominium.php',
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
     'App\\Data' => $baseDir . '/app/Data.php',
     'App\\Exceptions\\Handler' => $baseDir . '/app/Exceptions/Handler.php',
@@ -15,6 +16,7 @@ return array(
     'App\\Http\\Controllers\\Auth\\RegisterController' => $baseDir . '/app/Http/Controllers/Auth/RegisterController.php',
     'App\\Http\\Controllers\\Auth\\ResetPasswordController' => $baseDir . '/app/Http/Controllers/Auth/ResetPasswordController.php',
     'App\\Http\\Controllers\\Auth\\VerificationController' => $baseDir . '/app/Http/Controllers/Auth/VerificationController.php',
+    'App\\Http\\Controllers\\CondominiumController' => $baseDir . '/app/Http/Controllers/CondominiumController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Controllers\\DataController' => $baseDir . '/app/Http/Controllers/DataController.php',
     'App\\Http\\Controllers\\HomeController' => $baseDir . '/app/Http/Controllers/HomeController.php',
@@ -3881,6 +3883,7 @@ return array(
     'Zend\\Diactoros\\UploadedFileFactory' => $vendorDir . '/zendframework/zend-diactoros/src/UploadedFileFactory.php',
     'Zend\\Diactoros\\Uri' => $vendorDir . '/zendframework/zend-diactoros/src/Uri.php',
     'Zend\\Diactoros\\UriFactory' => $vendorDir . '/zendframework/zend-diactoros/src/UriFactory.php',
+    'condominiumSeeder' => $baseDir . '/database/seeds/condominiumSeeder.php',
     'phpDocumentor\\Reflection\\DocBlock' => $vendorDir . '/phpdocumentor/reflection-docblock/src/DocBlock.php',
     'phpDocumentor\\Reflection\\DocBlockFactory' => $vendorDir . '/phpdocumentor/reflection-docblock/src/DocBlockFactory.php',
     'phpDocumentor\\Reflection\\DocBlockFactoryInterface' => $vendorDir . '/phpdocumentor/reflection-docblock/src/DocBlockFactoryInterface.php',

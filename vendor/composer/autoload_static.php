@@ -471,6 +471,7 @@ class ComposerStaticInit8da6a35b0fda39d696a524e33a366462
 
     public static $classMap = array (
         'App\\API\\ApiError' => __DIR__ . '/../..' . '/app/API/ApiError.php',
+        'App\\Condominium' => __DIR__ . '/../..' . '/app/Condominium.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Data' => __DIR__ . '/../..' . '/app/Data.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
@@ -479,6 +480,7 @@ class ComposerStaticInit8da6a35b0fda39d696a524e33a366462
         'App\\Http\\Controllers\\Auth\\RegisterController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/RegisterController.php',
         'App\\Http\\Controllers\\Auth\\ResetPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ResetPasswordController.php',
         'App\\Http\\Controllers\\Auth\\VerificationController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/VerificationController.php',
+        'App\\Http\\Controllers\\CondominiumController' => __DIR__ . '/../..' . '/app/Http/Controllers/CondominiumController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\DataController' => __DIR__ . '/../..' . '/app/Http/Controllers/DataController.php',
         'App\\Http\\Controllers\\HomeController' => __DIR__ . '/../..' . '/app/Http/Controllers/HomeController.php',
@@ -4345,6 +4347,7 @@ class ComposerStaticInit8da6a35b0fda39d696a524e33a366462
         'Zend\\Diactoros\\UploadedFileFactory' => __DIR__ . '/..' . '/zendframework/zend-diactoros/src/UploadedFileFactory.php',
         'Zend\\Diactoros\\Uri' => __DIR__ . '/..' . '/zendframework/zend-diactoros/src/Uri.php',
         'Zend\\Diactoros\\UriFactory' => __DIR__ . '/..' . '/zendframework/zend-diactoros/src/UriFactory.php',
+        'condominiumSeeder' => __DIR__ . '/../..' . '/database/seeds/condominiumSeeder.php',
         'phpDocumentor\\Reflection\\DocBlock' => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src/DocBlock.php',
         'phpDocumentor\\Reflection\\DocBlockFactory' => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src/DocBlockFactory.php',
         'phpDocumentor\\Reflection\\DocBlockFactoryInterface' => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src/DocBlockFactoryInterface.php',
