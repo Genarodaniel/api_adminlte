@@ -21,75 +21,63 @@ class CondominiumController extends Controller
         $this->condominium = $condominium;
     }
 
-    public function list(){
+    public function list()
+    {
         try {
-            $data = ['data'=>$this->condominium->all()];
-            return response()->json($data,$this->successStatus);
-        }
-        catch(\Exception $e){
-            if(config('app.debug')){
-                return response()->json(ApiError::errorMessage($e->getMessage(),1010));
+            $data = ['data' => $this->condominium->all()];
+            return response()->json($data, $this->successStatus);
+        } catch (\Exception $e) {
+            if (config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
             }
-            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação',1010));
+            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 1010));
         }
     }
 
-    public function store(Request $request){
-          
-        try{
-            $validator = Validator::make($request->all(),[
-                'address_street'=>'required',
-                'address_number'=>'required',
-                'address_city'=>'required',
-                'address_state'=>'required',
-                'address_state_abbr'=>'required',
-                'address_country'=>'required',
-                'manager_id'=>'required|integer',
-                'address_complement'=>'nullable',
+    public function store(Request $request)
+    {
+
+        try {
+            $validator = Validator::make($request->all(), [
+                'address_street' => 'required',
+                'address_number' => 'required',
+                'address_city' => 'required',
+                'address_state' => 'required',
+                'address_state_abbr' => 'required',
+                'address_country' => 'required',
+                'manager_id' => 'required|integer',
+                'address_complement' => 'nullable',
             ]);
 
-            if($validator->fails()){
+            if ($validator->fails()) {
                 return response()->json(['error' => $validator->errors()]);
             }
             $input = $request->all();
-           $user_exists= User_app::where('id','=',$input['manager_id'])->exists();
-            $query = User_app::where('id','=',$input['manager_id'])->get('user_type');
-           
-            if($user_exists===false){
-                return response()->json(['error'=>'manager doesnt exists']);
-             }
-             else{
-                foreach($query as $value){
-                    $user['user_type']= $value->user_type;
-                    $user['id']=$value->id;
-             }
-             if($user['user_type']==='am'){
-                $data = Condominium::create($input);
-                $data->save();
-                $success['id']=$data->id;
-                $success['manager_id']=$data->manager_id; 
-                return  response()->json(['success'=>$success],200); 
-             }
-              else{
-                  return response()->json(['error'=> 'User types doesnt meets the requirement'],200);
-              }
-           
+            $user_exists = User_app::where('id', '=', $input['manager_id'])->exists();
+            $query = User_app::where('id', '=', $input['manager_id'])->get('user_type');
+
+            if ($user_exists === false) {
+                return response()->json(['error' => 'manager doesnt exists']);
+            } else {
+                foreach ($query as $value) {
+                    $user['user_type'] = $value->user_type;
+                    $user['id'] = $value->id;
+                }
+                if ($user['user_type'] === 'am') {
+                    $data = Condominium::create($input);
+                    $data->save();
+                    $success['id'] = $data->id;
+                    $success['manager_id'] = $data->manager_id;
+                    return  response()->json(['success' => $success], 200);
+                } else {
+                    return response()->json(['error' => 'User types doesnt meets the requirement'], 200);
+                }
             }
-            
-    }
-        catch(\Exception $e){
-            if(config('app.debug')){
-                return response()->json(ApiError::errorMessage($e->getMessage(),1010));
+        } catch (\Exception $e) {
+            if (config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
             }
-            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação',1010));
+            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 1010));
         }
     }
-
-    
-
-
-
-
-
-
 }
