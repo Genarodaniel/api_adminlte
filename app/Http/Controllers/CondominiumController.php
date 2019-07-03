@@ -36,7 +36,6 @@ class CondominiumController extends Controller
 
     public function store(Request $request)
     {
-
         try {
             $validator = Validator::make($request->all(), [
                 'address_street' => 'required',
@@ -78,6 +77,19 @@ class CondominiumController extends Controller
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
             }
             return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 1010));
+        }
+    }
+
+
+    public function show(Condominium $id){
+        try{
+            $id_exists = Condominium::where('id','=','$id')->exists();
+            if($id_exists === false){
+                return response()->json(['error'=>'Id inesxistente']);
+            }
+            else{
+                $data = ['data'=>$id];
+            }
         }
     }
 }
