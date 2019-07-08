@@ -12,6 +12,7 @@ Route::delete('/data/{data}', 'DataController@destroy')->name('path.destroy');
 
 Route::get('/condominiums','CondominiumController@list');
 Route::post('/condominium','CondominiumController@store');
+route::get('/condominium/{id}','CondominiumController@show');
 
 	Route::prefix('users')->group(function(){
 	Route::post('login','UserController@login');

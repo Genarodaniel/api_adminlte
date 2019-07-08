@@ -16,7 +16,7 @@ class CondominiumController extends Controller
     private $condominium;
 
 
-    public function __construct(\App\Condominium $condominium)
+    public function __construct(Condominium $condominium)
     {
         $this->condominium = $condominium;
     }
@@ -82,14 +82,23 @@ class CondominiumController extends Controller
 
 
     public function show(Condominium $id){
+
         try{
-            $id_exists = Condominium::where('id','=','$id')->exists();
+
+            $id_exists = Condominium::where('id','=',$id->id)->exists();
             if($id_exists === false){
-                return response()->json(['error'=>'Id inesxistente']);
+                return response()->json(['error'=>'houve um erro ao realizar a operação']);
             }
             else{
                 $data = ['data'=>$id];
+                return response()->json($data,200);
             }
+        }
+        catch(\Exception $e){
+            if(config('app.debug')){
+                return response()->json(ApiError::errorMessage($e->getMessage(),1010));
+            }
+            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação',1010));
         }
     }
 }
