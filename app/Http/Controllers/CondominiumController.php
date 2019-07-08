@@ -80,18 +80,33 @@ class CondominiumController extends Controller
         }
     }
 
+    public function update(Request $request){
+        // try{
+           $query =Condominium::where('id', '=', $request['id'])->get();
+           //$query->address_number =3;
+           //$query->save();
+           return response()->json($query);
+            // return $test;
+        // }
+        // catch(\Exception $e){
+        //     if(config('app.debug')){
+        //         return response()->json(ApiError::errorMessage($e->getMessage(),1010));
+        //     }
+        //     return response()->json(ApiError::errorMessage('houve um erro ao realizar a operacao',400));
+        // }
+    }
+
 
     public function show(Condominium $id){
 
         try{
-
             $id_exists = Condominium::where('id','=',$id->id)->exists();
             if($id_exists === false){
-                return response()->json(['error'=>'houve um erro ao realizar a operação']);
+                return response()->json(['error'=>'Condominio não existe']);
             }
             else{
                 $data = ['data'=>$id];
-                return response()->json($data,200);
+                return $data;
             }
         }
         catch(\Exception $e){
@@ -101,4 +116,7 @@ class CondominiumController extends Controller
             return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação',1010));
         }
     }
+
+
+
 }
