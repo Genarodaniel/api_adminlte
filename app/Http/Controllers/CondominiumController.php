@@ -82,10 +82,25 @@ class CondominiumController extends Controller
 
     public function update(Request $request){
         // try{
-           $query =Condominium::where('id', '=', $request['id'])->get();
+        //    $query =Condominium::where('id', '=', $request['id'])->get();
+            $id = $request['id'];
+            $query = Condominium::find($id);
+           
+            foreach($request as $value){
+                if((isset($value)) && !(isNull($value))){
+                   // $query = $value;
+                }
+            }
+
+            // 'address_street', 'address_number', 'address_state',
+            // 'address_city','manager_id','address_complement',
+            // // 'address_country','address_state_abbr',
+            $i=-1;
+            
+            return response()->json($query);
            //$query->address_number =3;
            //$query->save();
-           return response()->json($query);
+         
             // return $test;
         // }
         // catch(\Exception $e){
