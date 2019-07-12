@@ -9,6 +9,7 @@ use App\API\ApiError;
 use Validator;
 use App\User_app;
 use function GuzzleHttp\json_decode;
+use Illuminate\Support\Facades\Facade;
 
 class CondominiumController extends Controller
 {
@@ -79,25 +80,65 @@ class CondominiumController extends Controller
             return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 1010));
         }
     }
+    
+    public function validate_update($request){
+            $id=$request->id;
+            $condominium = $this->getCond($id);
+             $adstr =$request->address_street;
+            if(!is_null($adstr)||!Empty($adstr)||isset($adstr)){
+                $condominium->address_street = $adstr;
+            }
+            else{
+                $condominium->address_street= $condominium->address_street;
+            }
+    }
 
     public function update(Request $request){
         // try{
         //    $query =Condominium::where('id', '=', $request['id'])->get();
             $id = $request['id'];
-            $query = Condominium::find($id);
            
-            foreach($request as $value){
-                if((isset($value)) && !(isNull($value))){
-                   // $query = $value;
-                }
-            }
+            $condominium = $this->getCond($id);
+            
+            
+          
+            // $condominium->address_number=x;
+            // $condominium->address_city =3;
+            // $condominium->address_complement=x;
+            // $condominium->address_state =3;
+            // $condominium->address_country=x;
+            // $condominium->address_state_abbr =3;
+            $condominium->updated_at=now();
+            $condominium->save();
+            return $condominium;
+
+        //    "address_street":"Rowe Skyway","address_number":8425,
+        //    "address_city":"North Shyannefurt",
+        //    "address_complement":"Apt. 621",
+        //    "address_state":"District of Columbia",
+        //    "address_country":"Ireland",
+        //    "address_state_abbr":"DE",
+        //    "manager_id":23,"created_at":"2019-06-30 16:48:08",
+        //    "updated_at":"2019-06-30 16:48:08"
+
+
+
+
+
+
+
+            // foreach($request as $value){
+            //     if((isset($value)) && !(isNull($value))){
+            //        // $query = $value;
+            //     }
+            // }
 
             // 'address_street', 'address_number', 'address_state',
             // 'address_city','manager_id','address_complement',
-            // // 'address_country','address_state_abbr',
-            $i=-1;
+            // // // 'address_country','address_state_abbr',
+            // $i=-1;
             
-            return response()->json($query);
+            return response()->json($condominium);
            //$query->address_number =3;
            //$query->save();
          
@@ -109,6 +150,11 @@ class CondominiumController extends Controller
         //     }
         //     return response()->json(ApiError::errorMessage('houve um erro ao realizar a operacao',400));
         // }
+    }
+
+    public function getCond($id){
+        $condominium = Condominium::find($id);
+        return $condominium;
     }
 
 

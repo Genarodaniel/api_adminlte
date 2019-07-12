@@ -34,6 +34,7 @@ class ComposerStaticInit8da6a35b0fda39d696a524e33a366462
         'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
         '0d8253363903f0ac7b0978dcde4e28a0' => __DIR__ . '/..' . '/beyondcode/laravel-dump-server/helpers.php',
+        '6aa5f4acdef1105bffeb958fbc621aad' => __DIR__ . '/..' . '/lanin/laravel-api-debugger/src/Support/helpers.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -119,6 +120,7 @@ class ComposerStaticInit8da6a35b0fda39d696a524e33a366462
             'Lcobucci\\JWT\\' => 13,
             'Laravel\\Tinker\\' => 15,
             'Laravel\\Passport\\' => 17,
+            'Lanin\\Laravel\\ApiDebugger\\' => 26,
         ),
         'J' => 
         array (
@@ -361,6 +363,10 @@ class ComposerStaticInit8da6a35b0fda39d696a524e33a366462
         'Laravel\\Passport\\' => 
         array (
             0 => __DIR__ . '/..' . '/laravel/passport/src',
+        ),
+        'Lanin\\Laravel\\ApiDebugger\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/lanin/laravel-api-debugger/src',
         ),
         'JeroenNoten\\LaravelAdminLte\\' => 
         array (
@@ -2106,6 +2112,17 @@ class ComposerStaticInit8da6a35b0fda39d696a524e33a366462
         'JeroenNoten\\LaravelAdminLte\\Menu\\Filters\\SubmenuFilter' => __DIR__ . '/..' . '/jeroennoten/laravel-adminlte/src/Menu/Filters/SubmenuFilter.php',
         'JeroenNoten\\LaravelAdminLte\\ServiceProvider' => __DIR__ . '/..' . '/jeroennoten/laravel-adminlte/src/ServiceProvider.php',
         'JsonException' => __DIR__ . '/..' . '/symfony/polyfill-php73/Resources/stubs/JsonException.php',
+        'Lanin\\Laravel\\ApiDebugger\\Collection' => __DIR__ . '/..' . '/lanin/laravel-api-debugger/src/Collection.php',
+        'Lanin\\Laravel\\ApiDebugger\\Collections\\CacheCollection' => __DIR__ . '/..' . '/lanin/laravel-api-debugger/src/Collections/CacheCollection.php',
+        'Lanin\\Laravel\\ApiDebugger\\Collections\\MemoryCollection' => __DIR__ . '/..' . '/lanin/laravel-api-debugger/src/Collections/MemoryCollection.php',
+        'Lanin\\Laravel\\ApiDebugger\\Collections\\ProfilingCollection' => __DIR__ . '/..' . '/lanin/laravel-api-debugger/src/Collections/ProfilingCollection.php',
+        'Lanin\\Laravel\\ApiDebugger\\Collections\\QueriesCollection' => __DIR__ . '/..' . '/lanin/laravel-api-debugger/src/Collections/QueriesCollection.php',
+        'Lanin\\Laravel\\ApiDebugger\\Debugger' => __DIR__ . '/..' . '/lanin/laravel-api-debugger/src/Debugger.php',
+        'Lanin\\Laravel\\ApiDebugger\\Events\\StartProfiling' => __DIR__ . '/..' . '/lanin/laravel-api-debugger/src/Events/StartProfiling.php',
+        'Lanin\\Laravel\\ApiDebugger\\Events\\StopProfiling' => __DIR__ . '/..' . '/lanin/laravel-api-debugger/src/Events/StopProfiling.php',
+        'Lanin\\Laravel\\ApiDebugger\\ServiceProvider' => __DIR__ . '/..' . '/lanin/laravel-api-debugger/src/ServiceProvider.php',
+        'Lanin\\Laravel\\ApiDebugger\\Storage' => __DIR__ . '/..' . '/lanin/laravel-api-debugger/src/Storage.php',
+        'Lanin\\Laravel\\ApiDebugger\\Support\\Facade' => __DIR__ . '/..' . '/lanin/laravel-api-debugger/src/Support/Facade.php',
         'Laravel\\Passport\\ApiTokenCookieFactory' => __DIR__ . '/..' . '/laravel/passport/src/ApiTokenCookieFactory.php',
         'Laravel\\Passport\\AuthCode' => __DIR__ . '/..' . '/laravel/passport/src/AuthCode.php',
         'Laravel\\Passport\\Bridge\\AccessToken' => __DIR__ . '/..' . '/laravel/passport/src/Bridge/AccessToken.php',
@@ -2874,6 +2891,7 @@ class ComposerStaticInit8da6a35b0fda39d696a524e33a366462
         'PHP_Token_UNSET_CAST' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_USE' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_USE_FUNCTION' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
+        'PHP_Token_Util' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token/Util.php',
         'PHP_Token_VAR' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_VARIABLE' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_WHILE' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
