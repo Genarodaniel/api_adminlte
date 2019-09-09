@@ -22,12 +22,8 @@ class CreateCondominiumMigration extends Migration
             $table->string('address_state');
             $table->string('address_country');
             $table->string('address_state_abbr');
-            $table->integer('manager_id')->unsigned();
+            $table->integer('manager_id')->unsigned()->foreign('manager_id')->references('id')->on('api.user_apps');
             $table->timestamps();
-        });
-
-        Schema::table('condominiums', function($table) {
-            $table->foreign('manager_id')->references('id')->on('api.user_apps');
         });
      
     }

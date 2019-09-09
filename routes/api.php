@@ -6,7 +6,7 @@ Route::get('/data', 'DataController@index')->name('path.index');
 Route::post('/data', 'DataController@store')->name('path.store');
 Route::get('/data/{id}', 'DataController@show')->name('path.show');
 Route::put('/data/{data}', 'DataController@update')->name('path.update');
-Route::delete('/data/{data}', 'DataController@destroy')->name('path.destroy');
+Route::delete('/data/{r}', 'DataController@destroy')->name('path.destroy');
 //Route::get('/ok','ResidentController@all_users')->name('ok');
 
 
@@ -15,7 +15,7 @@ Route::post('/condominium','CondominiumController@store');
 route::get('/condominium/{id}','CondominiumController@show');
 route::post('update','CondominiumController@update');
 
-	Route::prefix('users')->group(function(){
+	Route::prefix('users')->group(function(){ 
 	Route::post('login','UserController@login');
 	Route::post('login_app','User_appController@login');
 	Route::post('register','UserController@register');
