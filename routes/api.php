@@ -15,10 +15,12 @@ Route::post('/condominium','CondominiumController@store');
 route::get('/condominium/{id}','CondominiumController@show');
 route::post('update','CondominiumController@update');
 
-	Route::prefix('users')->group(function(){ 
+Route::prefix('users')->group(function(){ 
+	
 	Route::post('login','UserController@login');
 	Route::post('login_app','User_appController@login');
 	Route::post('register','UserController@register');
+
 	Route::group(['middleware' =>'auth:api'], function(){
 		Route::get('details','UserController@details');
 		Route::get('/', 'User_appController@all_users')->name('all_users');
@@ -27,7 +29,8 @@ route::post('update','CondominiumController@update');
 	});
 
 });
-Route::post('add_user','User_appController@store')->name('add_user');
+
+	Route::post('add_user','User_appController@store')->name('add_user');
 	Route::get('/users_api', 'UserController@all_users')->name('all_users');
 	Route::get('/users_api/{id}', 'UserController@show')->name('single_user');
 	 

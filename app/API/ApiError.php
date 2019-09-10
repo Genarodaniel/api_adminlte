@@ -7,7 +7,7 @@ class ApiError
 {
     public static function errorMessage($message, $code){
         return [
-            'msg'=> $message,
+            'error'=> $message,
             'code'=> $code
         ];
     }
