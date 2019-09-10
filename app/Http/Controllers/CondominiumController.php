@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Condominium;
+use App\Http\Models\Condominium;
 use App\API\ApiError;
 use Validator;
-use App\User_app;
+use App\Http\Models\User_app;
 use function GuzzleHttp\json_decode;
 use Illuminate\Support\Facades\Facade;
 

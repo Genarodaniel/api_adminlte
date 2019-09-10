@@ -3,7 +3,7 @@
 namespace app\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\User_app;
+use App\Http\Models\User_app;
 use Validator;
 use App\API\ApiError;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +14,7 @@ class User_appController extends \App\Http\Controllers\Controller
     public $successStatus = 200;
     private $user_app;
 
-    public function __construct(\App\User_app $user_app){
+    public function __construct(User_app $user_app){
        $this->user_app = $user_app;
     }
 
@@ -37,7 +37,7 @@ class User_appController extends \App\Http\Controllers\Controller
 
 
 
-    public function show(\App\User_app $id){
+    public function show(User_app $id){
        
        try{
         $data =['data'=>$id];
@@ -53,7 +53,7 @@ class User_appController extends \App\Http\Controllers\Controller
         }
     }
 
-    public function show_email(\App\User_app $email){
+    public function show_email(User_app $email){
        
         try{
          $data =['data'=>$email];
@@ -92,7 +92,7 @@ class User_appController extends \App\Http\Controllers\Controller
                 if($validator->fails()){
                     return response()->json(['error' => $validator->errors()],401);
                 }
-                $input =$request->all();
+                $input = $request->all();
                 $input['password'] = bcrypt($input['password']);
                 $data = User_app::create($input);
                 $success['name'] = $data->name;

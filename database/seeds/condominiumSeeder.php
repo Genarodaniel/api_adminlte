@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\Http\Models\Condominium;
 
 class condominiumSeeder extends Seeder
 {
@@ -11,6 +12,6 @@ class condominiumSeeder extends Seeder
      */
     public function run()
     {
-        factory(\App\Condominium::class,40)->create();
+        factory(Condominium::class,40)->create();
     }
 }
