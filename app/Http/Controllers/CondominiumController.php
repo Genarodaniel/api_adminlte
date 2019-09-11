@@ -56,14 +56,14 @@ class CondominiumController extends Controller
             $user_exists = User_app::where('id', '=', $input['manager_id'])->exists();
             $query = User_app::where('id', '=', $input['manager_id'])->get('user_type');
 
-            if ($user_exists === false) {
+            if (!$user_exists) {
                 return response()->json(['error' => 'manager doesnt exists']);
             } else {
                 foreach ($query as $value) {
                     $user['user_type'] = $value->user_type;
                     $user['id'] = $value->id;
                 }
-                if ($user['user_type'] === 'am') {
+                if ($user['user_type'] == 'am') {
                     $data = Condominium::create($input);
                     $data->save();
                     $success['id'] = $data->id;
@@ -80,81 +80,106 @@ class CondominiumController extends Controller
             return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 1010));
         }
     }
-    
-    public function validate_update($request){
-            $id=$request->id;
-            $condominium = $this->getCond($id);
-             $adstr =$request->address_street;
-            if(!is_null($adstr)||!Empty($adstr)||isset($adstr)){
-                $condominium->address_street = $adstr;
-            }
-            else{
-                $condominium->address_street= $condominium->address_street;
-            }
-    }
 
     public function update(Request $request){
-        // try{
-        //    $query =Condominium::where('id', '=', $request['id'])->get();
-            $id = $request['id'];
-           
-            $condominium = $this->getCond($id);
-            
-            
-          
-            // $condominium->address_number=x;
-            // $condominium->address_city =3;
-            // $condominium->address_complement=x;
-            // $condominium->address_state =3;
-            // $condominium->address_country=x;
-            // $condominium->address_state_abbr =3;
-            $condominium->updated_at=now();
-            $condominium->save();
-            return $condominium;
 
-        //    "address_street":"Rowe Skyway","address_number":8425,
-        //    "address_city":"North Shyannefurt",
-        //    "address_complement":"Apt. 621",
-        //    "address_state":"District of Columbia",
-        //    "address_country":"Ireland",
-        //    "address_state_abbr":"DE",
-        //    "manager_id":23,"created_at":"2019-06-30 16:48:08",
-        //    "updated_at":"2019-06-30 16:48:08"
+        /*try { */
+
+            $validator = Validator::make($request->all(), [
+                'address_street' => 'nullable',
+                'address_number' => 'nullable',
+                'address_city' => 'nullable',
+                'address_state' => 'nullable',
+                'address_state_abbr' => 'nullable',
+                'address_country' => 'nullable',
+                'manager_id' => 'nullable',
+                'address_complement' => 'nullable',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()]);
+            } else {
+
+                $condominium = $this->getCond($request['id']);
+
+                if (!isset($request['address_street']) || !$request['address_street']){
+                    $condominium->address_street = $condominium->address_street;
+                } else {
+                    $condominium->address_street = trim($request['address_street']);
+                }
+
+                if (!isset($request['address_number']) || !$request['address_number']){
+                    $condominium->address_number = $condominium->address_number;
+                } else {
+                    $condominium->address_number = trim($request['address_number']);
+                }
+
+                if (!isset($request['address_city']) || !$request['address_city']){
+                    $condominium->address_city = $condominium->address_city;
+                } else {
+                    $condominium->address_city = trim($request['address_city']);
+                }
+
+                if (!isset($request['address_state']) || !$request['address_state']){
+                    $condominium->address_state = $condominium->address_state;
+                } else {
+                    $condominium->address_state = trim($request['address_state']);
+                }
+
+                if (!isset($request['address_state_abbr']) || !$request['address_state_abbr']){
+                    $condominium->address_state_abbr = $condominium->address_state_abbr;
+                } else {
+                    $condominium->address_state_abbr = trim($request['address_state_abbr']);
+                }
+
+                if (!isset($request['address_country']) || !$request['address_country']){
+                    $condominium->address_country = $condominium->address_country;
+                } else {
+                    $condominium->address_country = trim($request['address_country']);
+                }
+
+                if (!isset($request['manager_id']) || !$request['manager_id']){
+
+                    $condominium->manager_id = $condominium->manager_id;
+                } else {
+                    $manager = User_app::find($request['manager_id']);
+                    if ($manager['user_type'] == 'am'){
+                        $condominium->manager_id = trim($request['manager_id']);
+                    } else {
+                        return response()->json(['error' => 'The user doesn\'t exists or doesn\'t not a manager']);
+                    }
+                }
+
+                if (!isset($request['address_complement']) || !$request['address_complement']){
+                    $condominium->address_complement = $condominium->address_complement;
+                } else {
+                    $condominium->address_complement = trim($request['address_complement']);
+                }
+                $condominium->updated_at = now();
+                $condominium->save();
+
+                return response()->json($condominium);
+            }
 
 
+       /* } catch(\Exception $e){
+            if(config('app.debug')){
+                return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
+            }
+            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 1010));
+        } */
 
-
-
-
-
-            // foreach($request as $value){
-            //     if((isset($value)) && !(isNull($value))){
-            //        // $query = $value;
-            //     }
-            // }
-
-            // 'address_street', 'address_number', 'address_state',
-            // 'address_city','manager_id','address_complement',
-            // // // 'address_country','address_state_abbr',
-            // $i=-1;
-            
-            return response()->json($condominium);
-           //$query->address_number =3;
-           //$query->save();
-         
-            // return $test;
-        // }
-        // catch(\Exception $e){
-        //     if(config('app.debug')){
-        //         return response()->json(ApiError::errorMessage($e->getMessage(),1010));
-        //     }
-        //     return response()->json(ApiError::errorMessage('houve um erro ao realizar a operacao',400));
-        // }
     }
 
+
     public function getCond($id){
+
         $condominium = Condominium::find($id);
-        return $condominium;
+        if ($condominium){
+            return $condominium;
+        } else {
+            return response()->json(['error' => 'condominium doesn\'t exists']);
+        }
     }
 
 
