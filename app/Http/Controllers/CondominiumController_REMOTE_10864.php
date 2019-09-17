@@ -83,7 +83,7 @@ class CondominiumController extends Controller
 
     public function update(Request $request){
 
-        /*try { */
+        try {
 
             $validator = Validator::make($request->all(), [
                 'address_street' => 'nullable',
@@ -162,12 +162,12 @@ class CondominiumController extends Controller
             }
 
 
-       /* } catch(\Exception $e){
+        } catch(\Exception $e){
             if(config('app.debug')){
                 return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
             }
             return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 1010));
-        } */
+        }
 
     }
 
