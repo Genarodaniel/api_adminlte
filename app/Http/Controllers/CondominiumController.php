@@ -11,6 +11,7 @@ use App\Http\Models\User_app;
 use function GuzzleHttp\json_decode;
 use Illuminate\Support\Facades\Facade;
 
+
 class CondominiumController extends Controller
 {
     public $successStatus = 200;
@@ -81,8 +82,8 @@ class CondominiumController extends Controller
         }
     }
 
-    public function update(Request $request){
-
+    public function update(Request $request,$id){
+        $condominium = Condominium::find($id);
         try {
 
             $validator = Validator::make($request->all(), [
@@ -98,9 +99,10 @@ class CondominiumController extends Controller
 
             if ($validator->fails()) {
                 return response()->json(['error' => $validator->errors()]);
-            } else {
+            } elseif(!$condominium) {
+                return response()->json(['error' => 'Check condominium id']);
 
-                $condominium = $this->getCond($request['id']);
+            } else {
 
                 if (!isset($request['address_street']) || !$request['address_street']){
                     $condominium->address_street = $condominium->address_street;
@@ -173,7 +175,7 @@ class CondominiumController extends Controller
 
 
     public function getCond($id){
-
+        //$condominium = Condominium::where("id", $id)->first();
         $condominium = Condominium::find($id);
         if ($condominium){
             return $condominium;
