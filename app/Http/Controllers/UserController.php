@@ -34,12 +34,12 @@ class UserController extends Controller
     }
 
     public function register(Request $request) {
-        
+
         $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'email' => 'required|email',
-            'password' => 'required',
-            'c_password' => 'required|same:password',
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8'],
+            'c_password' => ['required', 'string','min:8','same:password']
         ]);
 
         if ($validator->fails()) {
@@ -51,21 +51,21 @@ class UserController extends Controller
 
         try {
             $user = User::where('email', '=', $request->get('email'));
-            
-            if ($user === null) {
-            
+
+            if (!$user) {
+
             $user = User::create($input);
             $success['token'] = $user->createToken('MyApp')->accessToken;
             $success['name'] = $user->name;
 
             return response()->json(['success' =>$success], $this->sucessStatus);
-            
+
             } else {
                 return response()->json(ApiError::errorMessage('E-mail ja cadastrado',1010));
             }
 
         } catch(\Exception $e){
-            
+
                 if (config('app.debug')) {
                     return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
                 }
@@ -79,7 +79,7 @@ class UserController extends Controller
     }
 
     public function all_users(){
-        
+
 
         $data = ['data'=>$this->user->all()];
         return response()->json($data);
@@ -99,7 +99,7 @@ class UserController extends Controller
     /* public function store(Request $request){
         $userData = $request->all();
         $this->user->create($userData);
-        
+
     }*/
 
     public function store(Request $request)
