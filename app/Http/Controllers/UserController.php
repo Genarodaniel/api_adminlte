@@ -27,7 +27,7 @@ class UserController extends Controller
         if(Auth::guard('web2')->attempt(['email' => request('email'), 'password' => request('password')])) {
             $user = Auth::guard('web2')->user();
             $success['token'] = $user->createToken('MyApp')->accessToken;
-            return response()->json(['sucess' => $success], $this->sucessStatus);
+            return response()->json(['success' => $success], $this->sucessStatus);
         }else {
             return response()->json(['error' => 'Unauthorised'], 401);
         }
@@ -65,7 +65,7 @@ class UserController extends Controller
             if(config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 402));
             }
-            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 402));
+            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
             }
         }
 
@@ -74,18 +74,4 @@ class UserController extends Controller
         $user = Auth::user();
         return response()->json(['success' => $user], $this->sucessStatus);
     }
-
-    // lembrar de refazer repaginado
-    // public function all_users()
-    // {
-    //     $data = ['data'=>$this->user->all()];
-    //     return response()->json($data);
-    // }
-
-    public function show(User $id)
-    {
-        $data = ['data'=>$id];
-        return response()->json($data,$this->sucessStatus);
-    }
-
 }

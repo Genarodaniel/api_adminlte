@@ -32,7 +32,7 @@ class CondominiumController extends Controller
             if(config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 402));
             }
-            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 402));
+            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
         }
     }
 
@@ -78,7 +78,7 @@ class CondominiumController extends Controller
             if(config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 402));
             }
-            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 402));
+            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
         }
     }
 
@@ -163,7 +163,7 @@ class CondominiumController extends Controller
             if(config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 402));
             }
-            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 402));
+            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
         }
     }
 
@@ -183,7 +183,7 @@ class CondominiumController extends Controller
             $condominium = Condominium::find($id);
 
             if(!$condominium) {
-                return response()->json(['error'=>'Condominio não existe']);
+                return response()->json(['error'=>'condominium doesn\'t exists']);
             }else {
                 $data = ['data'=>$id];
                 return $data;
@@ -192,7 +192,7 @@ class CondominiumController extends Controller
             if(config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(),402));
             }
-            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação',402));
+            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing',402));
         }
     }
 }

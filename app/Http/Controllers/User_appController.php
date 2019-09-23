@@ -26,7 +26,7 @@ class User_appController extends \App\Http\Controllers\Controller
     //         if(config('app.debug')){
     //             return response()->json(ApiError::errorMessage($e->getMessage(),402));
     //         }
-    //         return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação',402));
+    //         return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing',402));
     //     }
     // }
 
@@ -35,15 +35,15 @@ class User_appController extends \App\Http\Controllers\Controller
        try {
             if(isset($id) && $id){
                 $data =['data'=>$id];
-                return response()->json($data,$this->$successStatus);
+                return response()->json($data,$this->successStatus);
             }else {
-                return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação',402));
+                return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing',402));
             }
        }catch(\Exception $e) {
             if(config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(),402));
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operação',402));
+            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing',402));
         }
     }
 
@@ -72,14 +72,14 @@ class User_appController extends \App\Http\Controllers\Controller
             if(config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(),402));
             }
-            return response()->json(ApiError::errorMessage('Houve um erro ao realizar a operacao',402));
+            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing',402));
         }
     }
 
     public function login()
     {
         if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
-            return response()->json(['sucess' => 'user authenticated'], 200);
+            return response()->json(['success' => 'user authenticated'], 200);
         }else {
             return response()->json(['error' => request('email'), 'error2'=>request('password')], 401);
         }
