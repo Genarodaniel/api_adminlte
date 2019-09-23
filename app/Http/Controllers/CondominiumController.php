@@ -27,12 +27,12 @@ class CondominiumController extends Controller
     {
         try {
             $data = ['data' => $this->condominium->all()];
-            return response()->json($data, $this->successStatus);
+            return response()->json($data,$this->successStatus);
         } catch (\Exception $e) {
-            if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
+            if(config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
             }
-            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 1010));
+            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 402));
         }
     }
 
@@ -50,161 +50,149 @@ class CondominiumController extends Controller
                 'address_complement' => 'nullable',
             ]);
 
-            if ($validator->fails()) {
-                return response()->json(['error' => $validator->errors()]);
+            if($validator->fails()) {
+                return response()->json(['error' => $validator->errors()],402);
             }
             $input = $request->all();
             $user_exists = User_app::where('id', '=', $input['manager_id'])->exists();
             $query = User_app::where('id', '=', $input['manager_id'])->get('user_type');
 
-            if (!$user_exists) {
-                return response()->json(['error' => 'manager doesnt exists']);
-            } else {
+            if(!$user_exists) {
+                return response()->json(['error' => 'manager doesnt exists'],402);
+            }else {
                 foreach ($query as $value) {
                     $user['user_type'] = $value->user_type;
                     $user['id'] = $value->id;
                 }
-                if ($user['user_type'] == 'am') {
+                if($user['user_type'] == 'am') {
                     $data = Condominium::create($input);
                     $data->save();
                     $success['id'] = $data->id;
                     $success['manager_id'] = $data->manager_id;
-                    return  response()->json(['success' => $success], 200);
-                } else {
-                    return response()->json(['error' => 'User types doesnt meets the requirement'], 200);
+                    return  response()->json(['success' => $success]);
+                }else {
+                    return response()->json(['error' => 'User types doesnt meets the requirement'], 402);
                 }
             }
         } catch (\Exception $e) {
-            if (config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
+            if(config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
             }
-            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 1010));
+            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 402));
         }
     }
 
-    public function update(Request $request,$id){
-        $condominium = Condominium::find($id);
+    public function update(Request $request,$id)
+    {
         try {
+            $condominium = Condominium::find($id);
 
             $validator = Validator::make($request->all(), [
-                'address_street' => 'nullable',
-                'address_number' => 'nullable',
-                'address_city' => 'nullable',
-                'address_state' => 'nullable',
-                'address_state_abbr' => 'nullable',
-                'address_country' => 'nullable',
-                'manager_id' => 'nullable',
+                'address_street' => 'required',
+                'address_number' => 'required',
+                'address_city' => 'required',
+                'address_state' => 'required',
+                'address_state_abbr' => 'required',
+                'address_country' => 'required',
+                'manager_id' => 'required|integer',
                 'address_complement' => 'nullable',
             ]);
 
-            if ($validator->fails()) {
-                return response()->json(['error' => $validator->errors()]);
-            } elseif(!$condominium) {
-                return response()->json(['error' => 'Check condominium id']);
-
-            } else {
-
-                if (!isset($request['address_street']) || !$request['address_street']){
+            if($validator->fails()) {
+                return response()->json(['error' => $validator->errors()],402);
+            }elseif(!$condominium) {
+                return response()->json(['error' => 'Check condominium id'],402);
+            }else {
+                if(!isset($request['address_street']) || !$request['address_street']) {
                     $condominium->address_street = $condominium->address_street;
-                } else {
+                }else {
                     $condominium->address_street = trim($request['address_street']);
                 }
 
-                if (!isset($request['address_number']) || !$request['address_number']){
+                if(!isset($request['address_number']) || !$request['address_number']) {
                     $condominium->address_number = $condominium->address_number;
-                } else {
+                }else {
                     $condominium->address_number = trim($request['address_number']);
                 }
 
-                if (!isset($request['address_city']) || !$request['address_city']){
+                if(!isset($request['address_city']) || !$request['address_city']) {
                     $condominium->address_city = $condominium->address_city;
-                } else {
+                }else {
                     $condominium->address_city = trim($request['address_city']);
                 }
 
-                if (!isset($request['address_state']) || !$request['address_state']){
+                if(!isset($request['address_state']) || !$request['address_state']) {
                     $condominium->address_state = $condominium->address_state;
-                } else {
+                }else {
                     $condominium->address_state = trim($request['address_state']);
                 }
 
-                if (!isset($request['address_state_abbr']) || !$request['address_state_abbr']){
+                if(!isset($request['address_state_abbr']) || !$request['address_state_abbr']) {
                     $condominium->address_state_abbr = $condominium->address_state_abbr;
-                } else {
+                }else {
                     $condominium->address_state_abbr = trim($request['address_state_abbr']);
                 }
 
-                if (!isset($request['address_country']) || !$request['address_country']){
+                if(!isset($request['address_country']) || !$request['address_country']) {
                     $condominium->address_country = $condominium->address_country;
-                } else {
+                }else {
                     $condominium->address_country = trim($request['address_country']);
                 }
 
-                if (!isset($request['manager_id']) || !$request['manager_id']){
-
+                if(!isset($request['manager_id']) || !$request['manager_id']) {
                     $condominium->manager_id = $condominium->manager_id;
-                } else {
+                }else {
                     $manager = User_app::find($request['manager_id']);
-                    if ($manager['user_type'] == 'am'){
+                    if($manager['user_type'] == 'am') {
                         $condominium->manager_id = trim($request['manager_id']);
-                    } else {
-                        return response()->json(['error' => 'The user doesn\'t exists or doesn\'t not a manager']);
+                    }else {
+                        return response()->json(['error' => 'The user doesn\'t exists or doesn\'t not a manager'],402);
                     }
                 }
 
-                if (!isset($request['address_complement']) || !$request['address_complement']){
+                if(!isset($request['address_complement']) || !$request['address_complement']) {
                     $condominium->address_complement = $condominium->address_complement;
-                } else {
+                }else {
                     $condominium->address_complement = trim($request['address_complement']);
                 }
                 $condominium->updated_at = now();
                 $condominium->save();
-
-                return response()->json($condominium);
+                return response()->json(['success' => true,'data' => $condominium],$this->successStatus);
             }
-
-
-        } catch(\Exception $e){
-            if(config('app.debug')){
-                return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
+        }catch(\Exception $e) {
+            if(config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
             }
-            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 1010));
+            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 402));
         }
-
     }
 
-
-    public function getCond($id){
-        //$condominium = Condominium::where("id", $id)->first();
+    public function getCond($id)
+    {
         $condominium = Condominium::find($id);
-        if ($condominium){
+        if($condominium) {
             return $condominium;
-        } else {
+        }else {
             return response()->json(['error' => 'condominium doesn\'t exists']);
         }
     }
 
+    public function show(Condominium $id)
+    {
+        try {
+            $condominium = Condominium::find($id);
 
-    public function show(Condominium $id){
-
-        try{
-            $id_exists = Condominium::where('id','=',$id->id)->exists();
-            if($id_exists === false){
+            if(!$condominium) {
                 return response()->json(['error'=>'Condominio não existe']);
-            }
-            else{
+            }else {
                 $data = ['data'=>$id];
                 return $data;
             }
-        }
-        catch(\Exception $e){
-            if(config('app.debug')){
-                return response()->json(ApiError::errorMessage($e->getMessage(),1010));
+        }catch(\Exception $e) {
+            if(config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(),402));
             }
-            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação',1010));
+            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação',402));
         }
     }
-
-
-
 }

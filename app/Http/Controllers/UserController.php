@@ -24,17 +24,17 @@ class UserController extends Controller
 
     public function login()
     {
-        if (Auth::guard('web2')->attempt(['email' => request('email'), 'password' => request('password')])) {
+        if(Auth::guard('web2')->attempt(['email' => request('email'), 'password' => request('password')])) {
             $user = Auth::guard('web2')->user();
             $success['token'] = $user->createToken('MyApp')->accessToken;
             return response()->json(['sucess' => $success], $this->sucessStatus);
-        } else {
+        }else {
             return response()->json(['error' => 'Unauthorised'], 401);
         }
     }
 
-    public function register(Request $request) {
-
+    public function register(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -42,8 +42,8 @@ class UserController extends Controller
             'c_password' => ['required', 'string','min:8','same:password']
         ]);
 
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 401);
+        if($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 402);
         }
 
         $input = $request->all();
@@ -51,23 +51,21 @@ class UserController extends Controller
 
         try {
             $user = User::find($request['email']);
-
-            if (!$user) {
+            if(!$user) {
                 $user = User::create($input);
                 $success['token'] = $user->createToken('MyApp')->accessToken;
                 $success['name'] = $user->name;
 
                 return response()->json(['success' =>$success], $this->sucessStatus);
-            } else {
-                return response()->json(ApiError::errorMessage('E-mail ja cadastrado',1010));
+            }else {
+                return response()->json(ApiError::errorMessage('E-mail ja cadastrado',402));
             }
 
-        } catch(\Exception $e) {
-
-                if (config('app.debug')) {
-                    return response()->json(ApiError::errorMessage($e->getMessage(), 1010));
-                }
-                return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 1010));
+        }catch(\Exception $e) {
+            if(config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+            }
+            return response()->json(ApiError::errorMessage('houve um erro ao realizar a operação', 402));
             }
         }
 
@@ -77,45 +75,17 @@ class UserController extends Controller
         return response()->json(['success' => $user], $this->sucessStatus);
     }
 
-    public function all_users()
-    {
-        $data = ['data'=>$this->user->all()];
-        return response()->json($data);
-    }
-
-
+    // lembrar de refazer repaginado
+    // public function all_users()
+    // {
+    //     $data = ['data'=>$this->user->all()];
+    //     return response()->json($data);
+    // }
 
     public function show(User $id)
     {
-        $data =['data'=>$id];
-        return response()->json($data);
+        $data = ['data'=>$id];
+        return response()->json($data,$this->sucessStatus);
     }
 
-    public function ok()
-    {
-        return ['status'=> true];
-    }
-
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required',
-            'user_type'=> 'required',
-            'password' => 'required',
-            'remember_token ' =>str_random(10),
-            'email_verified_at' => now(),
-
-            //$user_exists = User_app::where('id', '=', $input['manager_id'])->exists();
-
-            //$id_exists = Condominium::where('id','=',$id->id)->exists();
-        ]);
-
-        $data = User::create($request->all());
-
-        return response()->json([
-            'message' => 'Data Successfully Stored!',
-            'data' => $data
-        ]);
-    }
 }

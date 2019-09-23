@@ -25,7 +25,7 @@ Route::prefix('api_user')->group(function(){
 		Route::prefix('condominium')->group(function(){
 			Route::get('/list','CondominiumController@list');
 			Route::post('/add','CondominiumController@store');
-			route::get('/{id}','CondominiumController@show');
+			route::get('/get/{id}','CondominiumController@show');
 			route::put('update/{id}','CondominiumController@update');
 		});
 
