@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Models\User_app;
 use Validator;
 use App\API\ApiError;
+use App\Http\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class User_appController extends \App\Http\Controllers\Controller
@@ -82,6 +83,52 @@ class User_appController extends \App\Http\Controllers\Controller
             return response()->json(['success' => 'user authenticated'], 200);
         }else {
             return response()->json(['error' => request('email'), 'error2'=>request('password')], 401);
+        }
+    }
+
+    public function update(Request $request,$id)
+    {
+        try {
+            $user = User_app::find($id);
+
+            $validator = Validator::make($request->all(), [
+                'name' => 'required',
+                'email' => 'required|email',
+                'password' => 'required',
+                'new_email' => 'required|unique:user_apps,email|email'
+            ]);
+
+            if($validator->fails()) {
+                return response()->json(['error' => $validator->errors()],402);
+            }elseif(!$user) {
+                return response()->json(['error' => 'Check user id'],402);
+            }elseif(Auth::guard('web')->attempt(['email' => request('email'), 'password' => request('password')])) {
+
+                if(!isset($request['name']) || !$request['name']) {
+                    $user->name = $user->name;
+                }else {
+                    $user->name = trim($request['name']);
+                }
+
+                if(!isset($request['new_email']) || !$request['new_email']) {
+                    $user->email = $user->email;
+                }else {
+                    $user->email = trim($request['new_email']);
+                }
+
+                $user->updated_at = now();
+                $user->save();
+
+                return response()->json(['success' => true,'data' => $user],$this->successStatus);
+            }else {
+                return response()->json(['success' => false,'error' => 'email or password doesn\'t match ']);
+            }
+
+        }catch(\Exception $e) {
+            if(config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+            }
+            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
         }
     }
 }
