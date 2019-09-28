@@ -5,10 +5,11 @@
 use App\Model;
 use App\Http\Models\Condominium;
 use Faker\Generator as Faker;
+use App\Http\Models\User_app;
 
 $factory->define(Condominium::class, function (Faker $faker) {
-    
-    $users_app = App\Http\Models\User_app::pluck('id')->toArray();
+
+    $users_app = User_app::pluck('id')->toArray();
     return [
         'address_street' => $faker->streetName,
 		'address_number' => $faker->randomNumber(4),
