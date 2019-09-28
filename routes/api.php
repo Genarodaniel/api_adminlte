@@ -33,8 +33,3 @@ Route::prefix('api_user')->group(function(){
 	});
 
 
-
-
-
-
-?>
