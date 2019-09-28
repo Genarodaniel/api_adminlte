@@ -30,6 +30,13 @@ Route::prefix('api_user')->group(function(){
 			route::put('update/{id}','CondominiumController@update')->name('condominium.update');
 		});
 
+		Route::prefix('utensil')->group(function(){
+			Route::get('list','UtensilController@list')->name('utensil.list');
+			Route::post('add','UtensilController@store')->name('utensil.store');
+			Route::put('update/{id}','UtensilController@update')->name('utensil.update');
+			Route::get('get/{id}','UtensilController@show')->name('utensil.show');
+		});
+
 	});
 
 
