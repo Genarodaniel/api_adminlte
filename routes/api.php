@@ -14,11 +14,12 @@ Route::prefix('api_user')->group(function(){
 	// app users routes
 	Route::group(['middleware' =>'auth:api'], function(){
 
-		Route::prefix('user')->group(function(){
-			Route::post('login','User_appController@login');
-			Route::get('/list', 'User_appController@all_users')->name('all_users');
-			Route::post('add','User_appController@store')->name('add_user');
-			Route::get('/get/{id}', 'User_appController@show')->name('single_user');
+		Route::prefix('user')->group(function() {
+			Route::post('login','User_appController@login')->name('user.login');
+			Route::get('list', 'User_appController@all_users')->name('user.list');
+			Route::post('add','User_appController@store')->name('user.store');
+			Route::get('get/{id}', 'User_appController@show')->name('user.show');
+			Route::put('update/{id}', 'User_appController@update')->name('user.update');
 
 		});
 
@@ -27,6 +28,13 @@ Route::prefix('api_user')->group(function(){
 			Route::post('/add','CondominiumController@store');
 			route::get('/get/{id}','CondominiumController@show');
 			route::put('update/{id}','CondominiumController@update');
+		});
+
+		Route::prefix('utensil')->group(function(){
+			Route::get('list','UtensilController@list')->name('utensil.list');
+			Route::post('add','UtensilController@store')->name('utensil.store');
+			Route::put('update/{id}','UtensilController@update')->name('utensil.update');
+			Route::get('get/{id}','UtensilController@show')->name('utensil.show');
 		});
 
 	});
