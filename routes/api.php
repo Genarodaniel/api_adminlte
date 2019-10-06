@@ -39,4 +39,7 @@ Route::prefix('api_user')->group(function(){
 
 	});
 
+	Route::get('ok',function(){
+		return response()->json(['ok'=>'ok']);
+	});
 
