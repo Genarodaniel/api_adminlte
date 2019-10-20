@@ -67,6 +67,8 @@ class User_appController extends \App\Http\Controllers\Controller
             $input['password'] = bcrypt($input['password']);
             $data = User_app::create($input);
             $success['name'] = $data->name;
+            $success['email'] = $data->email;
+            $success['id'] = $data->id;
 
             return response()->json(['success' => $success],$this->successStatus);
         }catch(\Exception $e) {
@@ -79,8 +81,13 @@ class User_appController extends \App\Http\Controllers\Controller
 
     public function login()
     {
-        if (Auth::attempt(['email' => request('email'), 'password' => request('password')])) {
-            return response()->json(['success' => 'user authenticated'], 200);
+        if (Auth::guard('web2')->attempt(['email' => request('email'), 'password' => request('password')])) {
+            $user = $this->user_app->where('email', request('email'))->first();
+            return response()->json([
+                'success' => 'user authenticated',
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email], 200);
         }else {
             return response()->json(['error' => request('email'), 'error2'=>request('password')], 401);
         }
