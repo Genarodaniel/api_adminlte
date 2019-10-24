@@ -103,43 +103,43 @@ class CondominiumController extends Controller
             }elseif(!$condominium) {
                 return response()->json(['error' => 'Check condominium id'],402);
             }else {
-                if(!isset($request['address_street']) || !$request['address_street']) {
+                if(!isset($request['address_street']) && !$request['address_street']) {
                     $condominium->address_street = $condominium->address_street;
                 }else {
                     $condominium->address_street = trim($request['address_street']);
                 }
 
-                if(!isset($request['address_number']) || !$request['address_number']) {
+                if(!isset($request['address_number']) && !$request['address_number']) {
                     $condominium->address_number = $condominium->address_number;
                 }else {
                     $condominium->address_number = trim($request['address_number']);
                 }
 
-                if(!isset($request['address_city']) || !$request['address_city']) {
+                if(!isset($request['address_city']) && !$request['address_city']) {
                     $condominium->address_city = $condominium->address_city;
                 }else {
                     $condominium->address_city = trim($request['address_city']);
                 }
 
-                if(!isset($request['address_state']) || !$request['address_state']) {
+                if(!isset($request['address_state']) && !$request['address_state']) {
                     $condominium->address_state = $condominium->address_state;
                 }else {
                     $condominium->address_state = trim($request['address_state']);
                 }
 
-                if(!isset($request['address_state_abbr']) || !$request['address_state_abbr']) {
+                if(!isset($request['address_state_abbr']) && !$request['address_state_abbr']) {
                     $condominium->address_state_abbr = $condominium->address_state_abbr;
                 }else {
                     $condominium->address_state_abbr = trim($request['address_state_abbr']);
                 }
 
-                if(!isset($request['address_country']) || !$request['address_country']) {
+                if(!isset($request['address_country']) && !$request['address_country']) {
                     $condominium->address_country = $condominium->address_country;
                 }else {
                     $condominium->address_country = trim($request['address_country']);
                 }
 
-                if(!isset($request['manager_id']) || !$request['manager_id']) {
+                if(!isset($request['manager_id']) && !$request['manager_id']) {
                     $condominium->manager_id = $condominium->manager_id;
                 }else {
                     $manager = User_app::find($request['manager_id']);
@@ -150,7 +150,7 @@ class CondominiumController extends Controller
                     }
                 }
 
-                if(!isset($request['address_complement']) || !$request['address_complement']) {
+                if(!isset($request['address_complement']) && !$request['address_complement']) {
                     $condominium->address_complement = $condominium->address_complement;
                 }else {
                     $condominium->address_complement = trim($request['address_complement']);
@@ -164,16 +164,6 @@ class CondominiumController extends Controller
                 return response()->json(ApiError::errorMessage($e->getMessage(), 402));
             }
             return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
-        }
-    }
-
-    public function getCond($id)
-    {
-        $condominium = Condominium::find($id);
-        if($condominium) {
-            return $condominium;
-        }else {
-            return response()->json(['error' => 'condominium doesn\'t exists']);
         }
     }
 

@@ -2,20 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Models\UtensilCond;
 
-class UtensilCondController extends Controller
+class UserCondController extends Controller
 {
     public function __construct(UtensilCond $utensilCond)
     {
         $this->utensilCond = $utensilCond;
     }
-
-    public function exists($utensil_id)
+    public function exists($condominium_id)
     {
-        return DB::table('utensilsCond')->where('utensil_id','=',$utensil_id)->first();
+        return $this->utensilCond->where('condominium_id', $condominium_id);
     }
 }

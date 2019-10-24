@@ -18,6 +18,7 @@ class UtensilController extends Controller
     {
         $this->utensil = $utensil;
         $this->successStatus = 200;
+        $this->utensil_cond = new UtensilCond();
     }
 
     public function list()
@@ -88,19 +89,20 @@ class UtensilController extends Controller
             }elseif(!$utensil) {
                 return response()->json(['error' => 'Check utensil id'],402);
             }else {
-                if(!isset($request['name']) || !$request['name']) {
+                if(!isset($request['name']) && !$request['name']) {
                     $utensil->name = $utensil->name;
                 }else {
                     $utensil->name = trim($request['name']);
                 }
 
-                if(!isset($request['description']) || !$request['description']) {
+                if(!isset($request['description']) && !$request['description']) {
                     $utensil->description = $utensil->description;
                 }else {
                     $utensil->description = trim($request['description']);
                 }
-                if(isset($request['condominium_id']) || $request['condominium_id']) {
-                    $utensilCond = UtensilCond::where('utensil_id','=', (int)$id)->first();
+
+                if(isset($request['condominium_id']) && $request['condominium_id']) {
+                    $utensilCond = $this->utensil_cond->exists();
                     if($utensilCond) {
                         $utensilCond->condominium_id = $request['condominium_id'];
                         $utensilCond->updated_at = now();
@@ -118,16 +120,6 @@ class UtensilController extends Controller
                 return response()->json(ApiError::errorMessage($e->getMessage(), 402));
             }
             return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
-        }
-    }
-
-    public function getCond($id)
-    {
-        $utensil = Utensil::find($id);
-        if($utensil) {
-            return $utensil;
-        }else {
-            return response()->json(['error' => 'utensil doesn\'t exists']);
         }
     }
 

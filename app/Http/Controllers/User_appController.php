@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use App\Http\Models\User_app;
 use Validator;
 use App\API\ApiError;
-use App\Http\Models\User;
+use App\Http\Models\Condominium;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Models\UserCond;
 
 class User_appController extends \App\Http\Controllers\Controller
 {
@@ -16,6 +17,8 @@ class User_appController extends \App\Http\Controllers\Controller
 
     public function __construct(User_app $user_app) {
        $this->user_app = $user_app;
+       $this->condominium = new Condominium();
+       $this->userCond = new UserCond();
     }
 
  // Lembrar de arrumar um método decente com paginação
@@ -35,7 +38,7 @@ class User_appController extends \App\Http\Controllers\Controller
     {
        try {
             if(isset($id) && $id){
-                $data =['data'=>$id];
+                $data = ['data'=>$id];
                 return response()->json($data,$this->successStatus);
             }else {
                 return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing',402));
@@ -55,7 +58,8 @@ class User_appController extends \App\Http\Controllers\Controller
                 'name' => 'required',
                 'email'=> 'required|email',
                 'user_type'=> 'required',
-                'password'=>'required'
+                'password'=>'required',
+                'condominium_id' => 'int|nullable'
 
             ]);
 
@@ -63,14 +67,53 @@ class User_appController extends \App\Http\Controllers\Controller
                 return response()->json(['error' => $validator->errors()],401);
             }
 
-            $input = $request->all();
-            $input['password'] = bcrypt($input['password']);
-            $data = User_app::create($input);
-            $success['name'] = $data->name;
-            $success['email'] = $data->email;
-            $success['id'] = $data->id;
+            if(!$this->user_app->where('email',$request->email)->first()){
+                if($request->user_type == "ar") {
+                    if(isset($request['condominium_id']) && $request['condominium_id']) {
+                        $condominium = $this->condominium->find($request['condominium_id']);
+                        if($condominium) {
 
-            return response()->json(['success' => $success],$this->successStatus);
+                            $user['password'] = bcrypt($request['password']);
+                            $user['name'] = $request['name'];
+                            $user['email'] = $request['email'];
+                            $user['user_type'] = $request['user_type'];
+                            $user['condominium_id'] = $request['condominium_id'];
+                            $user = $this->user_app->create($user);
+
+                            $utensil_cond['condominium_id'] = $request['condominium_id'];
+                            $utensil_cond['user_id'] = $user->id;
+                            $this->userCond->create($utensil_cond);
+
+                            $success['name'] = $user->name;
+                            $success['email'] = $user->email;
+                            $success['id'] = $user->id;
+
+                            return response()->json(['success' => $success], $this->successStatus);
+                        }else {
+                            return response()->json(['error' => 'The condominium doesn\'t exists ']);
+                        }
+
+                    }else {
+                        return response()->json(['error' => 'For users type AR you need to specify an condominium_id']);
+                    }
+                }else {
+
+                    $user['password'] = bcrypt($request['password']);
+                    $user['name'] = $request['name'];
+                    $user['email'] = $request['email'];
+                    $user['user_type'] = $request['user_type'];
+
+                    $data = User_app::create($user);
+                    $success['name'] = $data->name;
+                    $success['email'] = $data->email;
+                    $success['id'] = $data->id;
+
+                    return response()->json(['success' => $success], $this->successStatus);
+                }
+            }else {
+                return response()->json(['error' => 'The email are already in use']);
+            }
+
         }catch(\Exception $e) {
             if(config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(),402));
@@ -83,11 +126,16 @@ class User_appController extends \App\Http\Controllers\Controller
     {
         if (Auth::guard('web2')->attempt(['email' => request('email'), 'password' => request('password')])) {
             $user = $this->user_app->where('email', request('email'))->first();
+
             return response()->json([
                 'success' => 'user authenticated',
-                'id' => $user->id,
+                'id' => (int)$user->id,
                 'name' => $user->name,
-                'email' => $user->email], 200);
+                'email' => $user->email,
+                'password' => $user->password,
+                'created_at' => $user->created_at,
+                'updated_at' => $user->updated_at
+                    ], 200);
         }else {
             return response()->json(['error' => request('email'), 'error2'=>request('password')], 401);
         }
@@ -99,28 +147,29 @@ class User_appController extends \App\Http\Controllers\Controller
             $user = User_app::find($id);
 
             $validator = Validator::make($request->all(), [
-                'name' => 'required',
+                'new_name' => 'nullable',
                 'email' => 'required|email',
                 'password' => 'required',
-                'new_email' => 'required|unique:user_apps,email|email'
+                'new_email' => 'nullable|unique:user_apps,email|email',
+                'new_password'=>'nullable'
             ]);
 
             if($validator->fails()) {
                 return response()->json(['error' => $validator->errors()],402);
             }elseif(!$user) {
-                return response()->json(['error' => 'Check user id'],402);
+                return response()->json(['error' => 'User doesn\'t exists '],402);
             }elseif(Auth::guard('web')->attempt(['email' => request('email'), 'password' => request('password')])) {
 
-                if(!isset($request['name']) || !$request['name']) {
-                    $user->name = $user->name;
-                }else {
+                if(isset($request['new_name']) && $request['new_name']) {
                     $user->name = trim($request['name']);
                 }
 
-                if(!isset($request['new_email']) || !$request['new_email']) {
-                    $user->email = $user->email;
-                }else {
+                if(isset($request['new_email']) && $request['new_email']) {
                     $user->email = trim($request['new_email']);
+                }
+
+                if(isset($request['password']) && $request['password']) {
+                    $user->password = bcrypt($request['password']);
                 }
 
                 $user->updated_at = now();
