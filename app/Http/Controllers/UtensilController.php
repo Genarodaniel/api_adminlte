@@ -41,6 +41,11 @@ class UtensilController extends Controller
                 'name' => ['required', 'string', 'max:255'],
                 'description' => ['required', 'string','max:255'],
                 'condominium_id' => ['required', 'integer'],
+                'days' => ['required','array'],
+                'days.*'=>['integer'],
+                'work_start' => ['required','string'],
+                'work_end' => ['required','string'],
+                'max_time' => ['required','integer']
             ]);
 
             if($validator->fails()) {
@@ -52,25 +57,75 @@ class UtensilController extends Controller
             if(!$condominium_exists) {
                 return response()->json(['error' => 'condominiums doesnt exists'],402);
             }else {
-                    $utensil['name'] = $input['name'];
-                    $utensil['description'] = $input['description'];
-                    $utensil = Utensil::create($utensil);
-                    $utensil->save();
 
-                    $utensilCond['condominium_id'] = $input['condominium_id'];
-                    $utensilCond['utensil_id'] = $utensil->id;
-                    $utensilCond = UtensilCond::create($utensilCond);
-
-                    $success['utensil_id'] = $utensil->id;
-                    $success['condominium_id'] = $utensilCond->id;
-                    return  response()->json(['success' => $success]);
+                if(!$this->validateDays($request['days'])){
+                    return response()->json(['error' => "The days must be between 1 and 7"]);
                 }
+
+                $validateStart = $this->validateHour($request['work_start']);
+
+                if($validateStart !== true){
+                    return response()->json(['error' => " The work start" . $validateStart]);
+                }
+                $validateEnd = $this->validateHour($request['work_end']);
+
+
+                if($validateEnd !== true){
+                    return response()->json(['error' => " The work end" . $validateEnd]);
+                }
+
+
+                $utensil['name'] = $input['name'];
+                $utensil['description'] = $input['description'];
+                $utensil = Utensil::create($utensil);
+                $utensil->save();
+
+                $utensilCond['condominium_id'] = $input['condominium_id'];
+                $utensilCond['utensil_id'] = $utensil->id;
+                $utensilCond = UtensilCond::create($utensilCond);
+
+                $success['utensil_id'] = $utensil->id;
+                $success['condominium_id'] = $utensilCond->id;
+                return  response()->json(['success' => $success]);
+            }
         } catch (\Exception $e) {
             if(config('app.debug')) {
                 return response()->json(ApiError::errorMessage($e->getMessage(), 402));
             }
             return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
         }
+    }
+
+    public function validateDays($days)
+    {
+        $days_accept = [1,2,3,4,5,6,7];
+
+        foreach($days as $day){
+            if(!in_array($day, $days_accept)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public function validateHour($hour){
+        if(!stristr($hour,":")){
+            $error = "The format is invalid, this must be like 8:00";
+        }else {
+            $hour_strip = explode(":", $hour);
+            if(!isset($hour_strip[0])){
+                $error = "The format is invalid, this must be like 8:00";
+            }elseif(!($hour_strip[0] >= 00 && $hour_strip[0] <= 24)){
+                $error = "Must be an hour between 00 and 24";
+            }elseif(!isset($hour_strip[1])){
+                $error = "The format is invalid, this must be like 8:00";
+            }elseif(!($hour_strip[1] >= 00 && $hour_strip[1] <= 60)){
+                $error = "Must be an minute between 00 and 60";
+            }else {
+                $error = true;
+            }
+        }
+        return $error;
     }
 
     public function update(Request $request,$id)

@@ -12,6 +12,6 @@ class condominiumSeeder extends Seeder
      */
     public function run()
     {
-        //factory(Condominium::class,40)->create();
+        factory(Condominium::class,40)->create();
     }
 }
