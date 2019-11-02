@@ -37,7 +37,12 @@ Route::prefix('api_user')->group(function(){
 			Route::get('get/{id}','UtensilController@show')->name('utensil.show');
 		});
 
-		
+		Route::prefix('utensilSchedule')->group(function(){
+			Route::post('add','UtensilScheduleController@store')->name('utensilSchedule.store');
+
+		});
+
+
 
 	});
 
