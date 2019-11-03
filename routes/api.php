@@ -35,6 +35,10 @@ Route::prefix('api_user')->group(function(){
 			Route::post('add','UtensilController@store')->name('utensil.store');
 			Route::put('update/{id}','UtensilController@update')->name('utensil.update');
 			Route::get('get/{id}','UtensilController@show')->name('utensil.show');
+
+			Route::post('add_schedule','UtensilScheduleController@store')->name('utensilSchedule.store');
+			Route::put('update_schedule','UtensilScheduleController@update')->name('utensilSchedule.update');
+			Route::get('list_shedules/{utensil_id}','UtensilScheduleController@list')->name('UtensilShedule.list');
 		});
 
 		Route::prefix('utensilSchedule')->group(function(){
