@@ -8,9 +8,17 @@ use Validator;
 use App\Http\Models\Utensil;
 use App\API\ApiError;
 use App\Rules\day;
+use App\Http\Models\UtensilSchedule;
 
 class UtensilScheduleController extends Controller
 {
+
+    public function __construct(Utensil $utensil)
+    {
+        $this->utensil = $utensil;
+        $this->utensilSchedule = new UtensilSchedule();
+        $this->successStatus = 200;
+    }
     public function store(Request $request){
         try {
             $validator = Validator::make($request->all(), [
@@ -27,39 +35,60 @@ class UtensilScheduleController extends Controller
                 return response()->json(['error' => $validator->errors()],402);
             }
             $input = $request->all();
-            $utensil_exists = Utensil::where('id', '=', $input['utensil_id'])->exists();
+            $utensil_exists = $this->utensil->where('id', '=', $input['utensil_id'])->exists();
+
 
             if(!$utensil_exists) {
                 return response()->json(['error' => 'utensil doesnt exists'],402);
-
             }else {
 
-                foreach($input['days'] as $day => $days){
-                    if($day < 1 || $day > 7){
+                foreach($input['days'] as $days => $day){
+
+                    $schedule_exists = $this->utensilSchedule->where(
+                        'utensil_id', '=',$input['utensil_id'])->where(
+                        'days_work', '=', $days)->exists();
+
+                    if($schedule_exists){
+                        return response()->json(['error' => 'The schedule for days work '. $days . ' already exists']);
+                    }
+
+                    if($days < 1 || $days > 7){
                         return response()->json(['error' => "The day  must be between 1 and 7"]);
                     }
 
-                    $validateStart = $this->validateHour($days['work_start']);
+                    $validateStart = $this->validateHour($day['work_start']);
 
                     if($validateStart !== true){
-                        return response()->json(['error' => " The day " .$day .  " work start" . $validateStart]);
+                        return response()->json(['error' => " The day " .$days .  " work start" . $validateStart]);
                     }
 
-                    $validateEnd = $this->validateHour($days['work_end']);
+                    $validateEnd = $this->validateHour($day['work_end']);
 
                     if($validateEnd !== true){
-                        return response()->json(['error' => " The day " .$day .  " work start" . $validateEnd]);
+                        return response()->json(['error' => " The day " .$days .  " work start" . $validateEnd]);
                     }
 
-                    $verifyHour = $this->verifyHour($days['work_start'], $days['work_end'], $days['max_time']);
+                    $verifyHour = $this->verifyHour($day['work_start'], $day['work_end'], $day['max_time']);
 
                     if($verifyHour !== true){
-                        return response()->json(['error' => $verifyHour]);
+                        return response()->json(['error' =>"The day " . $days . " " . $verifyHour]);
                     }
 
-                    
+                    $utensilSchedule['days_work'] = $days;
+                    $utensilSchedule['utensil_id'] = trim($request['utensil_id']);
+                    $utensilSchedule['work_start'] = trim($day['work_start']);
+                    $utensilSchedule['work_end'] = trim($day['work_end']);
+                    $utensilSchedule['max_time'] = trim($day['max_time']);
+                    $utensilSchedule['created_at'] = now();
+                    $utensilSchedule['updated_at'] = now();
+                    $add = [];
+                    $add[] = $days;
+
+                    $data = $this->utensilSchedule->create($utensilSchedule);
 
                 }
+                $saves = implode(',',$add);
+                return response()->json(['success' => 'Days ' . $saves ],$this->successStatus);
 
             }
 
@@ -71,6 +100,79 @@ class UtensilScheduleController extends Controller
         }
 
     }
+
+    public function update(Request $request){
+        try {
+            $validator = Validator::make($request->all(), [
+                'utensil_id'=>['required','integer'],
+                'days' => ['required','array'],
+                'days.*'=>['array',new day],
+                'days.*.work_start' => ['string','required'],
+                'days.*.work_end' => ['string','required'],
+                'days.*.max_time' => ['numeric','required']
+            ]);
+
+
+            if($validator->fails()) {
+                return response()->json(['error' => $validator->errors()],402);
+            }
+            $input = $request->all();
+
+            foreach($input['days'] as $days => $day) {
+
+                $schedule_exists = $this->utensilSchedule->where(
+                    'utensil_id', '=',$input['utensil_id'])->where(
+                    'days_work', '=', $days)->exists();
+
+                if(!$schedule_exists){
+                    return response()->json(['error' => 'The schedule for days work '. $days . ' doenst exists']);
+                }
+
+                if($days < 1 || $days > 7){
+                    return response()->json(['error' => "The day  must be between 1 and 7"]);
+                }
+
+                $validateStart = $this->validateHour($day['work_start']);
+
+                if($validateStart !== true){
+                    return response()->json(['error' => " The day " .$days .  " work start" . $validateStart]);
+                }
+
+                $validateEnd = $this->validateHour($day['work_end']);
+
+                if($validateEnd !== true){
+                    return response()->json(['error' => " The day " .$days .  " work start" . $validateEnd]);
+                }
+
+                $verifyHour = $this->verifyHour($day['work_start'], $day['work_end'], $day['max_time']);
+
+                if($verifyHour !== true){
+                    return response()->json(['error' =>"The day " . $days . " " . $verifyHour]);
+                }
+
+                $utensilSchedule['days_work'] = $days;
+                $utensilSchedule['utensil_id'] = trim($request['utensil_id']);
+                $utensilSchedule['work_start'] = trim($day['work_start']);
+                $utensilSchedule['work_end'] = trim($day['work_end']);
+                $utensilSchedule['max_time'] = trim($day['max_time']);
+                $utensilSchedule['created_at'] = now();
+                $utensilSchedule['updated_at'] = now();
+                $add = [];
+                $add[] = $days;
+
+                $data = $this->utensilSchedule->create($utensilSchedule);
+
+        }
+        $saves = implode(',',$add);
+        return response()->json(['success' => 'Days ' . $saves ],$this->successStatus);
+
+        }catch (\Exception $e) {
+            if(config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+            }
+            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+        }
+}
 
     public function validateDays($days)
     {

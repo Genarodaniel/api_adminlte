@@ -19,7 +19,7 @@ class UtensilsSchedule extends Migration
             $table->integer('days_work')->unsigned()->foreign('days_work')->references('day')->on('api.daytoday');
             $table->string('work_start');
             $table->string('work_end');
-            $table->integer('max_time');
+            $table->float('max_time');
             $table->timestamps();
         });
     }
