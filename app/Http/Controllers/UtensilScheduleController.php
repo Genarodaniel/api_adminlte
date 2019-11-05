@@ -13,9 +13,9 @@ use App\Http\Models\UtensilSchedule;
 class UtensilScheduleController extends Controller
 {
 
-    public function __construct(Utensil $utensil)
+    public function __construct()
     {
-        $this->utensil = $utensil;
+        $this->utensil = new Utensil();
         $this->utensilSchedule = new UtensilSchedule();
         $this->successStatus = 200;
     }
@@ -27,7 +27,7 @@ class UtensilScheduleController extends Controller
                 'days.*'=>['array',new day],
                 'days.*.work_start' => ['string','required'],
                 'days.*.work_end' => ['string','required'],
-                'days.*.max_time' => ['numeric','required']
+                'days.*.max_time' => ['string','required']
             ]);
 
 
@@ -196,10 +196,13 @@ class UtensilScheduleController extends Controller
     {
         $striped_start = explode(":", $day_start);
         $striped_end = explode(":", $day_end);
+        $striped_max_time = explode(':', $max_time);
         $hour_start = (int)$striped_start[0];
         $hour_end = (int)$striped_end[0];
         $minute_start = (int)$striped_start[1];
         $minute_end = (int)$striped_end[1];
+        $minute_max = (int)$striped_max_time[1];
+        $hour_max = (int)$striped_max_time[0];
 
         $error = '';
         if(strlen($hour_start) > 2){
@@ -213,6 +216,12 @@ class UtensilScheduleController extends Controller
             return $error;
         }elseif(strlen($minute_end) > 2){
             $error =  "Work end minute need to have max 2 houses";
+            return $error;
+        }elseif(strlen($minute_max) > 2){
+            $error =  "max time minute need to have max 2 houses";
+            return $error;
+        }elseif(strlen($minute_max) > 2){
+            $error =  "max minute need to have max 2 houses";
             return $error;
         }elseif($hour_start > $hour_end){
             $error =  "Work start is bigger than end";
@@ -238,6 +247,23 @@ class UtensilScheduleController extends Controller
     public function list($utensil_id){
         $days = $this->utensilSchedule->where('utensil_id', '=', $utensil_id)->get();
         return response()->json($days,$this->successStatus);
+    }
+
+    public function listAppointments($utensil_id){
+        $days = $this->utensilSchedule->where('utensil_id', '=', $utensil_id)->get();
+        return $days;
+    }
+
+
+    public function verifyOpen($utensil_id, $day){
+        $open = $this->utensilSchedule->where(
+            'utensil_id', '=',$utensil_id)->where(
+            'days_work', '=', $day)->exists();
+        if($open){
+            return true;
+        }
+
+        return false;
     }
 
     public function validateHour($hour){

@@ -41,12 +41,10 @@ Route::prefix('api_user')->group(function(){
 			Route::get('list_shedules/{utensil_id}','UtensilScheduleController@list')->name('UtensilShedule.list');
 		});
 
-		Route::prefix('utensilSchedule')->group(function(){
-			Route::post('add','UtensilScheduleController@store')->name('utensilSchedule.store');
+		Route::prefix('reserve')->group(function(){
+			Route::post('add','ReservController@store')->name('reserve.store');
 
 		});
-
-
 
 	});
 
