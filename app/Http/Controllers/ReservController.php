@@ -10,7 +10,7 @@ use App\Http\Models\User_app;
 use Validator;
 use App\API\ApiError;
 use App\Http\Controllers\UtensilScheduleController as Us;
-
+use App\Http\Models\Reserv;
 
 class ReservController extends Controller
 {
@@ -20,6 +20,7 @@ class ReservController extends Controller
         $this->utensilSchedule = new UtensilSchedule();
         $this->userApp = new User_app();
         $this->usController = new Us();
+        $this->reserve = new Reserv();
     }
 
     public function store(Request $request)
@@ -28,55 +29,44 @@ class ReservController extends Controller
             $validator = Validator::make($request->all(), [
                 'utensil_id'=>['required','integer'],
                 'user_id' => ['integer','required'],
-                'day' => ['required','date'],
-                'time'=>['required','string'],
-                'hour_start' => ['string','required'],
+                'day' => ['required','date','after:yesterday'],
+                'time'=>['required','date_format:G:i'],
+                'hour_start' => ['date_format:G:i','required'],
             ]);
 
+            
             if($validator->fails()) {
                 return response()->json(['error' => $validator->errors()],402);
             }
-
+            
             $input = $request->all();
             $utensil_exists = $this->utensil->find($input['utensil_id']);
             $user_exists = $this->userApp->find($input['user_id']);
-
+            
             if(!(isset($utensil_exists) && $utensil_exists)){
                 return response()->json(['error' => 'utensil doens\'t exists']);
             }
-
+            
             if(!(isset($user_exists) && $user_exists)){
                 return response()->json(['error' => 'user doens\'t exists']);
             }
-
+            
             $day_week = date('N',strtotime($input['day']));
-
+            
+            
             if(!$this->usController->verifyOpen($input['utensil_id'], $day_week)){
                 return response()->json(['error' => 'This utensil is not open for this day']);
             }
-
-            $validateHour = $this->validateHour($input['hour_start']);
-
-            if($validateHour !== true){
-                return response()->json(['error' =>"This day hour_start" . $validateHour]);
-            }
-
-            $validateTime = $this->validateHour($input['time']);
-
-            if($validateHour !== true){
-                return response()->json(['error' =>"This day time " . $validateTime]);
-            }
-
+            
             $hour_end = $this->setHourEnd($input['hour_start'],$input['time']);
-
-
+            
             $appointments = $this->usController->listAppointments($input['utensil_id']);
-
+            
             if(isset($hour_end['another_day']) && $hour_end['another_day']){
-
+                
             }else {
                 foreach($appointments as $app){
-                    if(!$app['days_work'] == $day_week){
+                    if($app['days_work'] !== $day_week){
                         $work = false;
                     }else {
                         $work_start = strtotime($app['work_start']);
@@ -85,12 +75,24 @@ class ReservController extends Controller
                         $hour_end = strtotime($hour_end['hour_end']);
                         $work = true;
 
-                        if($work_start < $hour_start){
+                        
+                        if($work_start > $hour_start){
                             return response()->json(['error' => 'The hour start must be bigger than work start']);
                         }elseif($work_end < $hour_end){
                             return response()->json(['error' => 'The time must be less than work end']);
-                        }elseif()
+                        }else{
+                            $reservs = $this->listReserv($input['utensil_id'], $input['day']);
 
+                            foreach($reservs as $reserv){
+                                if($hour_start > strtotime($reserv['hour_start'] && $hour_start < strtotime($reserv['hour_start'])){
+                                     echo '<pre>' . var_dump('aq entrou').'</pre>';die;
+                                }else{
+                                     echo '<pre>' . var_dump(' nao entrou').'</pre>';die;
+                                }
+                            }
+                        }
+                       
+                        
                     }
                 }
 
@@ -107,6 +109,12 @@ class ReservController extends Controller
         //     }
         //     return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
         // }
+    }
+
+    public function listReserv($utensil_id, $day)
+    {
+        $reservs = $this->reserve->where('utensil_id', $utensil_id)->where('day',$day)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('hour_start','hour_end','user_apps.email','user_apps.name')->get();
+        return $reservs;
     }
 
     public function validateHour($hour){
@@ -156,10 +164,10 @@ class ReservController extends Controller
                 $return['another_day'] = true;
                 $return['hour_end'] = '23:59';
                 $return['another_start'] = '00:00';
-                $return['another_end'] = $diff . ':' . $minute_new;
+                $return['another_end'] = date("H:i", strtotime($hour) + strtotime($time));
             }else {
                 $return['another_day'] = false;
-                $return['hour_end'] = $hour_new . ':' . $minute_new;
+                $return['hour_end'] = date("H:i", strtotime($hour) + strtotime($time));
             }
         }else{
             $hour_new = $hour_strip[0] + $hour_end_strip[0];
@@ -174,10 +182,10 @@ class ReservController extends Controller
                 $return['another_day'] = true;
                 $return['hour_end'] = '23:59';
                 $return['another_start'] = '00:00';
-                $return['another_end'] = $diff . ':' . $minute_new;
+                $return['another_end'] = date("H:i", strtotime($hour) + strtotime($time));
             }else {
                 $return['another_day'] = false;
-                $return['hour_end'] = $hour_new . ':' . $minute_new;
+                $return['hour_end'] = date("H:i", strtotime($hour) + strtotime($time));
             }
         }
 

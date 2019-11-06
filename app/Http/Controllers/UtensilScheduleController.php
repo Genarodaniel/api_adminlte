@@ -25,11 +25,10 @@ class UtensilScheduleController extends Controller
                 'utensil_id'=>['required','integer'],
                 'days' => ['required','array'],
                 'days.*'=>['array',new day],
-                'days.*.work_start' => ['string','required'],
-                'days.*.work_end' => ['string','required'],
-                'days.*.max_time' => ['string','required']
+                'days.*.work_start' => ['date_format:G:i','required'],
+                'days.*.work_end' => ['date_format:G:i','required'],
+                'days.*.max_time' => ['date_format:G:i','required']
             ]);
-
 
             if($validator->fails()) {
                 return response()->json(['error' => $validator->errors()],402);
@@ -49,29 +48,29 @@ class UtensilScheduleController extends Controller
                         'days_work', '=', $days)->exists();
 
                     if($schedule_exists){
-                        return response()->json(['error' => 'The schedule for days work '. $days . ' already exists']);
+                        return response()->json(['error' => 'The schedule for days work '. $days . ' already exists'],402);
                     }
 
                     if($days < 1 || $days > 7){
-                        return response()->json(['error' => "The day  must be between 1 and 7"]);
+                        return response()->json(['error' => "The day  must be between 1 and 7"],402);
                     }
 
                     $validateStart = $this->validateHour($day['work_start']);
 
                     if($validateStart !== true){
-                        return response()->json(['error' => " The day " .$days .  " work start" . $validateStart]);
+                        return response()->json(['error' => " The day " .$days .  " work start" . $validateStart],402);
                     }
 
                     $validateEnd = $this->validateHour($day['work_end']);
 
                     if($validateEnd !== true){
-                        return response()->json(['error' => " The day " .$days .  " work start" . $validateEnd]);
+                        return response()->json(['error' => " The day " .$days .  " work start" . $validateEnd],402);
                     }
 
-                    $verifyHour = $this->verifyHour($day['work_start'], $day['work_end'], $day['max_time']);
+                    $verifyHour = $this->verifyHour($day['work_start'], $day['work_end'], $day['max_time'],402);
 
                     if($verifyHour !== true){
-                        return response()->json(['error' =>"The day " . $days . " " . $verifyHour]);
+                        return response()->json(['error' =>$verifyHour],402);
                     }
 
                     $utensilSchedule['days_work'] = $days;
@@ -108,9 +107,9 @@ class UtensilScheduleController extends Controller
                 'utensil_id'=>['required','integer'],
                 'days_work' => ['required','integer'],
                 'days'=>['array'],
-                'days.work_start' => ['string','required'],
-                'days.work_end' => ['string','required'],
-                'days.max_time' => ['numeric','required']
+                'days.work_start' => ['date_format:G:i','required'],
+                'days.work_end' => ['date_format:G:i','required'],
+                'days.max_time' => ['date_format:G:i','required']
             ]);
 
 
@@ -129,30 +128,30 @@ class UtensilScheduleController extends Controller
 
 
             if(!$schedule_exists){
-                return response()->json(['error' => 'This schedule doenst exists, you need to create it']);
+                return response()->json(['error' => 'This schedule doenst exists, you need to create it'],402);
             }
 
 
             if($input['days_work'] < 1 || $input['days_work'] > 7){
-                return response()->json(['error' => "The day  must be between 1 and 7"]);
+                return response()->json(['error' => "The day  must be between 1 and 7"],402);
             }
 
             $validateStart = $this->validateHour($work_start);
 
             if($validateStart !== true){
-                return response()->json(['error' => " This day  work start" . $validateStart]);
+                return response()->json(['error' => " This day  work start" . $validateStart],402);
             }
 
             $validateEnd = $this->validateHour($work_end);
 
             if($validateEnd !== true){
-                return response()->json(['error' => " This day work start" . $validateEnd]);
+                return response()->json(['error' => " This day work start" . $validateEnd],402);
             }
 
             $verifyHour = $this->verifyHour($work_start, $work_end, $max_time);
 
             if($verifyHour !== true){
-                return response()->json(['error' =>"This day " . $verifyHour]);
+                return response()->json(['error' =>$verifyHour],402);
             }
 
             $utensilSchedule['days_work'] = $input['days_work'];
@@ -226,24 +225,17 @@ class UtensilScheduleController extends Controller
         }elseif($hour_start > $hour_end){
             $error =  "Work start is bigger than end";
             return $error;
-        }elseif($max_time >= 1){
-            if(($hour_end - $hour_start) < $max_time){
-                $error =  "The hour interval must be bigger than max time";
-                return $error;
-            }
         }elseif($hour_start == $hour_end){
             if($minute_start > $minute_end){
                 $error =  "Minute start is bigger than end";
                 return $error;
-
-            }elseif(($minute_end - $minute_start) < $max_time){
-                $error =  "The minute interval must be bigger than max time";
-                return $error;
             }
+            return true;
         }
         return true;
 
     }
+
     public function list($utensil_id){
         $days = $this->utensilSchedule->where('utensil_id', '=', $utensil_id)->get();
         return response()->json($days,$this->successStatus);
