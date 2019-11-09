@@ -25,9 +25,9 @@ class UtensilScheduleController extends Controller
                 'utensil_id'=>['required','integer'],
                 'days' => ['required','array'],
                 'days.*'=>['array',new day],
-                'days.*.work_start' => ['date_format:G:i','required'],
-                'days.*.work_end' => ['date_format:G:i','required'],
-                'days.*.max_time' => ['date_format:G:i','required']
+                'days.*.work_start' => ['date_format:H:i','required'],
+                'days.*.work_end' => ['date_format:H:i','required'],
+                'days.*.max_time' => ['date_format:H:i','required']
             ]);
 
             if($validator->fails()) {
@@ -80,7 +80,6 @@ class UtensilScheduleController extends Controller
                     $utensilSchedule['max_time'] = trim($day['max_time']);
                     $utensilSchedule['created_at'] = now();
                     $utensilSchedule['updated_at'] = now();
-                    $add = [];
                     $add[] = $days;
 
                     $data = $this->utensilSchedule->create($utensilSchedule);
@@ -190,6 +189,9 @@ class UtensilScheduleController extends Controller
         }
         return true;
     }
+
+
+
 
     public function verifyHour($day_start, $day_end, $max_time)
     {

@@ -21,18 +21,17 @@ class User_appController extends \App\Http\Controllers\Controller
        $this->userCond = new UserCond();
     }
 
- // Lembrar de arrumar um método decente com paginação
-    // public function all_users(){
-    //     try {
-    //         $data = ['data'=>$this->user_app->all()];
-    //         return response()->json($data);
-    //    }catch(\Exception $e) {
-    //         if(config('app.debug')){
-    //             return response()->json(ApiError::errorMessage($e->getMessage(),402));
-    //         }
-    //         return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing',402));
-    //     }
-    // }
+    public function all_users(){
+        try {
+            $data = ['data'=>$this->user_app->all()];
+            return response()->json($data);
+       }catch(\Exception $e) {
+            if(config('app.debug')){
+                return response()->json(ApiError::errorMessage($e->getMessage(),402));
+            }
+            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing',402));
+        }
+    }
 
     public function show(User_app $id)
     {
