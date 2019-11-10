@@ -44,6 +44,7 @@ Route::prefix('api_user')->group(function(){
 		Route::prefix('reserve')->group(function(){
 			Route::post('add','ReservController@store')->name('reserve.store');
 			Route::post('listReserv','ReservController@list');
+			Route::put('update','ReservController@update');
 
 		});
 
