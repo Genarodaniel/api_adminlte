@@ -8,6 +8,7 @@ use App\Http\Models\Condominium;
 use App\Http\Models\Utensil;
 use App\Http\Models\UtensilCond;
 use App\API\ApiError;
+use App\Http\Models\UtensilSchedule;
 use Validator;
 
 class UtensilController extends Controller
@@ -19,6 +20,7 @@ class UtensilController extends Controller
         $this->utensil = $utensil;
         $this->successStatus = 200;
         $this->utensil_cond = new UtensilCond();
+        $this->utensil_schedule = new UtensilSchedule();
     }
 
     public function list()
@@ -148,6 +150,18 @@ class UtensilController extends Controller
                 return response()->json(ApiError::errorMessage($e->getMessage(),402));
             }
             return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing',402));
+        }
+    }
+
+    public function delete($id)
+    {
+        if($this->utensil->find($id)){
+            $this->utensil->where('id', $id)->delete();
+            $this->utensil_cond->where('utensil_id', $id)->delete();
+            $this->utensil_schedule->where('utensil_id', $id)->delete();
+            return response()->json(['success' => true], 200);
+        }else{
+            return response()->json(['error', 'usuário não existe'],402);
         }
     }
 

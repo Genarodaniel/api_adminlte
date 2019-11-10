@@ -248,6 +248,16 @@ class UtensilScheduleController extends Controller
         return $days;
     }
 
+    public function delete($id)
+    {
+        if($this->utensilSchedule->find($id)){
+            $this->utensilSchedule->where('id',$id)->delete();
+            return response()->json(['success' => true], 200);
+        }else{
+            return response()->json(['error', 'condominio não existe'],402);
+        }
+    }
+
 
     public function verifyOpen($utensil_id, $day){
         $open = $this->utensilSchedule->where(

@@ -139,6 +139,16 @@ class User_appController extends \App\Http\Controllers\Controller
             return response()->json(['error' => request('email'), 'error2'=>request('password')], 401);
         }
     }
+    public function delete($id)
+    {
+        if($this->user_app->find($id)){
+            $this->user_app->where('id',$id)->delete();
+            $this->userCond->where('user_id', $id)->delete();
+            return response()->json(['success' => true], 200);
+        }else{
+            return response()->json(['error', 'usuário não existe'],402);
+        }
+    }
 
     public function update(Request $request,$id)
     {

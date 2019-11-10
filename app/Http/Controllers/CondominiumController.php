@@ -8,8 +8,11 @@ use App\Http\Models\Condominium;
 use App\API\ApiError;
 use Validator;
 use App\Http\Models\User_app;
+use App\Http\Models\UserCond;
+
 use function GuzzleHttp\json_decode;
 use Illuminate\Support\Facades\Facade;
+use App\Http\Models\UtensilCond;
 
 
 class CondominiumController extends Controller
@@ -21,6 +24,8 @@ class CondominiumController extends Controller
     public function __construct(Condominium $condominium)
     {
         $this->condominium = $condominium;
+        $this->utensil_cond = new UtensilCond();
+        $this->user_cond = new UserCond();
     }
 
     public function list()
@@ -167,7 +172,7 @@ class CondominiumController extends Controller
         }
     }
 
-    public function show(Condominium $id)
+    public function show($id)
     {
         try {
             $condominium = Condominium::find($id);
@@ -183,6 +188,18 @@ class CondominiumController extends Controller
                 return response()->json(ApiError::errorMessage($e->getMessage(),402));
             }
             return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing',402));
+        }
+    }
+
+    public function delete($id)
+    {
+        if($this->condominium->find($id)){
+            $this->condominium->where('id',$id)->delete();
+            $this->utensil_cond->where('condominium_id',$id)->delete();
+            $this->user_cond->where('condominium_id',$id)->delete();
+            return response()->json(['success' => true], 200);
+        }else{
+            return response()->json(['error', 'condominio não existe'],402);
         }
     }
 }

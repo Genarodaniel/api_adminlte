@@ -74,4 +74,14 @@ class UserController extends Controller
         $user = Auth::user();
         return response()->json(['success' => $user], $this->sucessStatus);
     }
+
+    public function delete($id)
+    {
+        if($this->user->find($id)){
+            $this->user->where('id',$id)->delete();
+            return response()->json(['success' => true], 200);
+        }else{
+            return response()->json(['error', 'usuário não existe'],402);
+        }
+    }
 }

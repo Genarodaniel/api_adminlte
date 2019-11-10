@@ -516,6 +516,25 @@ class ReservController extends Controller
 
     }
 
+    public function delete($id)
+    {
+        $reserve = $this->reserve->find($id);
+        if($reserve){
+            if($reserve->vinculated == 1){
+                $reservas = $this->listReservUser($reserve->user_id);
+                    foreach($reservas as $reserv){
+                        if($reserv['vinculated'] == $reserve->id){
+                            $this->reserve->where('vinculated', $reserve->id)->delete();
+                        }
+                    }
+            }
+            $this->reserve->where('id',$id)->delete();
+            return response()->json(['success' => true], 200);
+        }else{
+            return response()->json(['error', 'condominio não existe'],402);
+        }
+    }
+
     public function listReservUser($user_id){
         if($this->reserve->where('user_id', $user_id)->exists()){
             $reservs = $this->reserve->where('user_id', $user_id)->get();
