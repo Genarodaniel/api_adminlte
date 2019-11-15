@@ -26,7 +26,7 @@ class UtensilController extends Controller
     public function list()
     {
         try {
-            $data = ['data' => $this->utensil->all()];
+            $data = ['data' => $this->utensil->paginate(20)];
             return response()->json($data,$this->successStatus);
         } catch (\Exception $e) {
             if(config('app.debug')) {
@@ -38,18 +38,11 @@ class UtensilController extends Controller
 
     public function store(Request $request)
     {
-
-
         try {
             $validator = Validator::make($request->all(), [
                 'name' => ['required', 'string', 'max:255'],
                 'description' => ['required', 'string','max:255'],
-                'condominium_id' => ['required', 'integer'],
-                'days' => ['required','array'],
-                'days.*'=>['integer'],
-                'work_start' => ['required','string'],
-                'work_end' => ['required','string'],
-                'max_time' => ['required','numeric']
+                'condominium_id' => ['required', 'integer']
             ]);
 
             if($validator->fails()) {

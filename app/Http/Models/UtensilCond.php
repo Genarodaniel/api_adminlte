@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class UtensilCond extends Model
 {
-    protected $table = "UtensilsCond";
+    protected $table = "utensilscond";
     protected $fillable = [
         'condominium_id', 'utensil_id'
     ];

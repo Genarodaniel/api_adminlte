@@ -23,7 +23,7 @@ class User_appController extends \App\Http\Controllers\Controller
 
     public function all_users(){
         try {
-            $data = ['data'=>$this->user_app->all()];
+            $data = ['success' => true,'users' => $this->user_app->paginate(20)];
             return response()->json($data);
        }catch(\Exception $e) {
             if(config('app.debug')){
@@ -131,7 +131,6 @@ class User_appController extends \App\Http\Controllers\Controller
                 'id' => (int)$user->id,
                 'name' => $user->name,
                 'email' => $user->email,
-                'password' => $user->password,
                 'created_at' => $user->created_at,
                 'updated_at' => $user->updated_at
                     ], 200);

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DayToDay extends Model
 {
-    protected $table = "DayToDay";
+    protected $table = "daytoday";
     protected $fillable = [
         'day', 'name'
     ];
