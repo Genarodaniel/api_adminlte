@@ -99,7 +99,6 @@ class CondominiumController extends Controller
                 'address_state' => 'required',
                 'address_state_abbr' => 'required',
                 'address_country' => 'required',
-                'manager_id' => 'required|integer',
                 'address_complement' => 'nullable',
             ]);
 
@@ -144,22 +143,12 @@ class CondominiumController extends Controller
                     $condominium->address_country = trim($request['address_country']);
                 }
 
-                if(!isset($request['manager_id']) && !$request['manager_id']) {
-                    $condominium->manager_id = $condominium->manager_id;
-                }else {
-                    $manager = User_app::find($request['manager_id']);
-                    if($manager['user_type'] == 'am') {
-                        $condominium->manager_id = trim($request['manager_id']);
-                    }else {
-                        return response()->json(['error' => 'The user doesn\'t exists or doesn\'t not a manager'],402);
-                    }
-                }
-
                 if(!isset($request['address_complement']) && !$request['address_complement']) {
                     $condominium->address_complement = $condominium->address_complement;
                 }else {
                     $condominium->address_complement = trim($request['address_complement']);
                 }
+
                 $condominium->updated_at = now();
                 $condominium->save();
                 return response()->json(['success' => true,'data' => $condominium],$this->successStatus);
