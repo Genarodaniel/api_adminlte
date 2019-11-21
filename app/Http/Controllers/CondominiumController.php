@@ -180,7 +180,7 @@ class CondominiumController extends Controller
             if(!$condominium) {
                 return response()->json(['error'=>'condominium doesn\'t exists']);
             }else {
-                $data = ['data'=>$id];
+                $data = ['data'=>$condominium];
                 return $data;
             }
         }catch(\Exception $e) {
