@@ -168,7 +168,7 @@ class User_appController extends \App\Http\Controllers\Controller
             }elseif(Auth::guard('web')->attempt(['email' => request('email'), 'password' => request('password')])) {
 
                 if(isset($request['new_name']) && $request['new_name']) {
-                    $user->name = trim($request['name']);
+                    $user->name = trim($request['new_name']);
                 }
 
                 if(isset($request['new_email']) && $request['new_email']) {
@@ -176,7 +176,7 @@ class User_appController extends \App\Http\Controllers\Controller
                 }
 
                 if(isset($request['password']) && $request['password']) {
-                    $user->password = bcrypt($request['password']);
+                    $user->password = bcrypt($request['new_password']);
                 }
 
                 $user->updated_at = now();
