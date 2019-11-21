@@ -34,12 +34,18 @@ class User_appController extends \App\Http\Controllers\Controller
         }
     }
 
-    public function show(User_app $id)
+    public function show($id)
     {
        try {
             if(isset($id) && $id){
-                $data = ['data'=>$id];
-                return response()->json($data,$this->successStatus);
+                $user = $this->user_app->find($id);
+                if($user) {
+                    $data = ['data' => $user];
+                    return response()->json($data,$this->successStatus);
+                }else{
+                    return response()->json(['success' => false, 'error' => 'user doesn\'t exists']);
+                }
+
             }else {
                 return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing',402));
             }
@@ -151,7 +157,7 @@ class User_appController extends \App\Http\Controllers\Controller
     public function update(Request $request,$id)
     {
         try {
-            $user = User_app::find($id);
+            $user = $this->user_app->find($id);
 
             $validator = Validator::make($request->all(), [
                 'new_name' => 'nullable',
