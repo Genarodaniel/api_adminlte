@@ -19,7 +19,6 @@ class CreateTableUsersApp extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->string('user_type');
-            $table->string('email_verified_at');
             $table->rememberToken();
             $table->timestamps();
         });

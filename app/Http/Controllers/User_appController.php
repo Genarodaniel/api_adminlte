@@ -22,6 +22,7 @@ class User_appController extends \App\Http\Controllers\Controller
     }
 
     public function all_users(){
+
         try {
             $data = ['success' => true,'users' => $this->user_app->paginate(20)];
             return response()->json($data);
