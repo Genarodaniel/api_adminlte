@@ -127,15 +127,13 @@ class User_appController extends \App\Http\Controllers\Controller
             $user = $this->user_app->where('email', request('email'))->first();
 
             return response()->json([
-                'success' => 'user authenticated',
+                'success' => true,
                 'id' => (int)$user->id,
                 'name' => $user->name,
-                'email' => $user->email,
-                'created_at' => $user->created_at,
-                'updated_at' => $user->updated_at
+                'email' => $user->email
                     ], 200);
         }else {
-            return response()->json(['error' => request('email'), 'error2'=>request('password')], 401);
+            return response()->json(['success' => false, 'error'=> 'credentials error'], 401);
         }
     }
     public function delete($id)
