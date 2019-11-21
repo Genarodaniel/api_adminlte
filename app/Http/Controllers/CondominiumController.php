@@ -31,7 +31,7 @@ class CondominiumController extends Controller
     public function list()
     {
         try {
-            $data = ['data' => $this->condominium->all()];
+            $data = ['data' => $this->condominium->paginate(20)];
             return response()->json($data,$this->successStatus);
         } catch (\Exception $e) {
             if(config('app.debug')) {
