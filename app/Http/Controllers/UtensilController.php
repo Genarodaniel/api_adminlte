@@ -154,7 +154,7 @@ class UtensilController extends Controller
             $this->utensil_schedule->where('utensil_id', $id)->delete();
             return response()->json(['success' => true], 200);
         }else{
-            return response()->json(['error', 'usuário não existe'],402);
+            return response()->json(['error'=>' Condominio não existe'],402);
         }
     }
 
