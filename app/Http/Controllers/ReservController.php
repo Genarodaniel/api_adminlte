@@ -531,7 +531,7 @@ class ReservController extends Controller
             $this->reserve->where('id',$id)->delete();
             return response()->json(['success' => true], 200);
         }else{
-            return response()->json(['error', 'condominio não existe'],402);
+            return response()->json(['error', 'Reserva não existe'],402);
         }
     }
 
