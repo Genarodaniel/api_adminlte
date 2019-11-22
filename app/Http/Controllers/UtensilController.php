@@ -65,7 +65,7 @@ class UtensilController extends Controller
                 $utensilCond = UtensilCond::create($utensilCond);
 
                 $success['utensil_id'] = $utensil->id;
-                $success['condominium_id'] = $utensilCond->id;
+                $success['condominium_id'] = $utensilCond->condominium_id;
                 return  response()->json(['success' => $success]);
             }
         } catch (\Exception $e) {
