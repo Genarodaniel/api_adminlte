@@ -84,8 +84,7 @@ class UtensilController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'name' => 'required | string | max:255',
-                'description' => 'nullable | string | max:255',
-                'condominium_id' => 'nullable | integer',
+                'description' => 'required | string | max:255',
             ]);
 
             if($validator->fails()) {
@@ -105,16 +104,6 @@ class UtensilController extends Controller
                     $utensil->description = trim($request['description']);
                 }
 
-                if(isset($request['condominium_id']) && $request['condominium_id']) {
-                    $utensilCond = $this->utensil_cond->exists();
-                    if($utensilCond) {
-                        $utensilCond->condominium_id = $request['condominium_id'];
-                        $utensilCond->updated_at = now();
-                        $utensilCond->save();
-                    }else {
-                        return response()->json(['error' => 'The Condominium doesn\'t exists'],402);
-                    }
-                }
                 $utensil->updated_at = now();
                 $utensil->save();
                 return response()->json(['success' => true,'data' => $utensil],$this->successStatus);
