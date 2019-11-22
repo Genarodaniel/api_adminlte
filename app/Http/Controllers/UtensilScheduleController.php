@@ -104,7 +104,7 @@ class UtensilScheduleController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'utensil_id'=>['required','integer'],
-                'days_work' => ['required','integer'],
+                'days_work' => ['required', new Day],
                 'days'=>['array'],
                 'days.work_start' => ['date_format:G:i','required'],
                 'days.work_end' => ['date_format:G:i','required'],
