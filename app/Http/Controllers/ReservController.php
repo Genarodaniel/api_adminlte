@@ -439,7 +439,7 @@ class ReservController extends Controller
                                         }
                                     }
                                 }
-                                
+
                                 $reservas = $this->listReservUser($reserve->user_id);
                                 foreach($reservas as $reserv){
                                     if($reserv['vinculated'] == $reserve->id){
@@ -457,7 +457,7 @@ class ReservController extends Controller
                                 $json['reserves'][] = $this->buildJson($data,$reserve);
                                 return response()->json($json,200);
                             }else{
-                                 
+
                                 $reservas = $this->listReservUser($reserve->user_id);
                                 foreach($reservas as $reserv){
                                     if($reserv['vinculated'] == $reserve->id){
@@ -586,8 +586,14 @@ class ReservController extends Controller
     {
         $utensil_id = $request->utensil_id;
         $day = $request->day;
+        $reservs_exists = $this->reserve->where('utensil_id', $utensil_id)->where('day',$day)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('hour_start','hour_end','user_apps.email','user_apps.name')->exists();
         $reservs = $this->reserve->where('utensil_id', $utensil_id)->where('day',$day)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('hour_start','hour_end','user_apps.email','user_apps.name')->get();
-        return response()->json($reservs);
+        if($reservs_exists){
+            return response()->json($reservs);
+        }else {
+            return response()->json(['success' => false, 'error' => 'doesn\'t have reserves this day']);
+        }
+
     }
 
     public function validateHour($hour){
