@@ -48,9 +48,9 @@ use Illuminate\Http\Request;
 
 		Route::prefix('reserve')->group(function(){
 			Route::post('add','ReservController@store')->name('reserve.store');
-			Route::post('listReserv','ReservController@listByDate')->name('reserve.listByDate');
-			Route::post('listReserv','ReservController@listByUser')->name('reserve.listByUser');
-			Route::post('listReserv','ReservController@listByUtensil')->name('reserve.listByUtensil');
+			Route::post('list_by_date','ReservController@listByDate')->name('reserve.listByDate');
+			Route::post('listReserv_by_user','ReservController@listByUser')->name('reserve.listByUser');
+			Route::post('list_by_utensil','ReservController@listByUtensil')->name('reserve.listByUtensil');
 			Route::put('update','ReservController@update')->name('reserve.update');
 			Route::delete('delete/{id}','ReservController@delete')->name('reserve.delete');
 
