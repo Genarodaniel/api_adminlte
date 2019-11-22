@@ -582,18 +582,97 @@ class ReservController extends Controller
         }
     }
 
-    public function list(Request $request)
+    public function listByDate(Request $request)
     {
-        $utensil_id = $request->utensil_id;
-        $day = $request->day;
-        $reservs_exists = $this->reserve->where('utensil_id', $utensil_id)->where('day',$day)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('hour_start','hour_end','user_apps.email','user_apps.name')->exists();
-        $reservs = $this->reserve->where('utensil_id', $utensil_id)->where('day',$day)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('hour_start','hour_end','user_apps.email','user_apps.name')->get();
-        if($reservs_exists){
-            return response()->json($reservs);
-        }else {
-            return response()->json(['success' => false, 'error' => 'doesn\'t have reserves this day']);
-        }
+        try{
+            $validator = Validator::make($request->all(), [
+                'utensil_id' => ['required','integer'],
+                'day' => ['required','date']
+            ]);
 
+            if($validator->fails()) {
+                return response()->json(['error' => $validator->errors()],402);
+            }
+
+            $reservs_exists = $this->reserve->where('utensil_id', $request->utensil_id)->where('day',$request->day)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('hour_start','hour_end','user_apps.email','user_apps.name')->exists();
+
+            $reservs = $this->reserve->where('utensil_id', $request->utensil_id)->where('day',$request->day)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('hour_start','hour_end','user_apps.email','user_apps.name')->get();
+
+            if($reservs_exists){
+                return response()->json($reservs);
+            }else {
+                return response()->json(['success' => false, 'error' => 'doesn\'t have reserves this day']);
+            }
+
+        }catch (\Exception $e) {
+            if(config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+            }
+
+            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+        }
+    }
+
+    public function listByUser(Request $request)
+    {
+        try{
+            $validator = Validator::make($request->all(), [
+                'user_id' => ['required','integer']
+            ]);
+
+            if($validator->fails()) {
+                return response()->json(['error' => $validator->errors()],402);
+            }
+
+            $reservs_exists = $this->reserve->where('user_id', $request->user_id)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('hour_start','hour_end','user_apps.email','user_apps.name')->exists();
+
+            $reservs = $this->reserve->where('user_id', $request->user_id)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('hour_start','hour_end','user_apps.email','user_apps.name')->get();
+
+            if($reservs_exists){
+                return response()->json($reservs);
+            }else {
+                return response()->json(['success' => false, 'error' => 'doesn\'t have reserves for this user']);
+            }
+
+
+        }catch (\Exception $e) {
+            if(config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+            }
+
+            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+        }
+    }
+
+    public function listByUtensil(Request $request)
+    {
+        try{
+            $validator = Validator::make($request->all(), [
+                'utensil_id' => ['required','integer']
+            ]);
+
+            if($validator->fails()) {
+                return response()->json(['error' => $validator->errors()],402);
+            }
+
+            $reservs_exists = $this->reserve->where('utensil_id', $request->utensil_id)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('hour_start','hour_end','user_apps.email','user_apps.name')->exists();
+
+            $reservs = $this->reserve->where('utensil_id', $request->utensil_id)->join('user_apps', 'reserv.utensil_id', '=', 'user_apps.id')->select('hour_start','hour_end','user_apps.email','user_apps.name')->get();
+
+            if($reservs_exists){
+                return response()->json($reservs);
+            }else {
+                return response()->json(['success' => false, 'error' => 'doesn\'t have reserves for this utensil']);
+            }
+
+
+        }catch (\Exception $e) {
+            if(config('app.debug')) {
+                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+            }
+
+            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+        }
     }
 
     public function validateHour($hour){
