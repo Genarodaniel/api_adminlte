@@ -240,7 +240,11 @@ class UtensilScheduleController extends Controller
 
     public function list($utensil_id){
         $days = $this->utensilSchedule->where('utensil_id', '=', $utensil_id)->get();
-        return response()->json($days,$this->successStatus);
+        if(!$days) {
+            return response()->json(['success' => false, 'error' => 'Dont have schedules for this utensil']);
+        }else {
+            return response()->json($days,$this->successStatus);
+        }
     }
 
     public function listAppointments($utensil_id){
