@@ -254,7 +254,7 @@ class UtensilScheduleController extends Controller
             $this->utensilSchedule->where('id',$id)->delete();
             return response()->json(['success' => true], 200);
         }else{
-            return response()->json(['error', 'condominio não existe'],402);
+            return response()->json(['error', 'Horário de funcionamento não cadastrado'],402);
         }
     }
 
