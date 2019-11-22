@@ -42,7 +42,7 @@ use Illuminate\Http\Request;
 
 			Route::post('add_schedule','UtensilScheduleController@store')->name('utensilSchedule.store');
 			Route::put('update_schedule','UtensilScheduleController@update')->name('utensilSchedule.update');
-			Route::get('list_shedules/{utensil_id}','UtensilScheduleController@list')->name('UtensilSchedule.list');
+			Route::get('list_schedules/{utensil_id}','UtensilScheduleController@list')->name('UtensilSchedule.list');
 			Route::delete('delete_schedule/{id}','UtensilScheduleController@delete')->name('utensilSchedule.delete');
 		});
 
