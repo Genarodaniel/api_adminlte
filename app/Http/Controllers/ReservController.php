@@ -594,9 +594,9 @@ class ReservController extends Controller
                 return response()->json(['error' => $validator->errors()],402);
             }
 
-            $reservs_exists = $this->reserve->where('utensil_id', $request->utensil_id)->where('day',$request->day)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('hour_start','hour_end','user_apps.email','user_apps.name')->exists();
+            $reservs_exists = $this->reserve->where('utensil_id', $request->utensil_id)->where('day',$request->day)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('day','hour_start','hour_end','user_apps.email','user_apps.name')->exists();
 
-            $reservs = $this->reserve->where('utensil_id', $request->utensil_id)->where('day',$request->day)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('hour_start','hour_end','user_apps.email','user_apps.name')->get();
+            $reservs = $this->reserve->where('utensil_id', $request->utensil_id)->where('day',$request->day)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('day','hour_start','hour_end','user_apps.email','user_apps.name')->get();
 
             if($reservs_exists){
                 return response()->json($reservs);
@@ -624,9 +624,9 @@ class ReservController extends Controller
                 return response()->json(['error' => $validator->errors()],402);
             }
 
-            $reservs_exists = $this->reserve->where('user_id', $request->user_id)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('hour_start','hour_end','user_apps.email','user_apps.name')->exists();
+            $reservs_exists = $this->reserve->where('user_id', $request->user_id)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('day','hour_start','hour_end','user_apps.email','user_apps.name')->exists();
 
-            $reservs = $this->reserve->where('user_id', $request->user_id)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('hour_start','hour_end','user_apps.email','user_apps.name')->get();
+            $reservs = $this->reserve->where('user_id', $request->user_id)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('day','hour_start','hour_end','user_apps.email','user_apps.name')->get();
 
             if($reservs_exists){
                 return response()->json($reservs);
@@ -655,9 +655,9 @@ class ReservController extends Controller
                 return response()->json(['error' => $validator->errors()],402);
             }
 
-            $reservs_exists = $this->reserve->where('utensil_id', $request->utensil_id)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('hour_start','hour_end','user_apps.email','user_apps.name')->exists();
+            $reservs_exists = $this->reserve->where('utensil_id', $request->utensil_id)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('day','hour_start','hour_end','user_apps.email','user_apps.name')->exists();
 
-            $reservs = $this->reserve->where('utensil_id', $request->utensil_id)->join('user_apps', 'reserv.utensil_id', '=', 'user_apps.id')->select('hour_start','hour_end','user_apps.email','user_apps.name')->get();
+            $reservs = $this->reserve->where('utensil_id', $request->utensil_id)->join('user_apps', 'reserv.utensil_id', '=', 'user_apps.id')->select('day','hour_start','hour_end','user_apps.email','user_apps.name')->get();
 
             if($reservs_exists){
                 return response()->json($reservs);
