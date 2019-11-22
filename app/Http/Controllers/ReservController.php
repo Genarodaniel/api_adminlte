@@ -34,15 +34,15 @@ class ReservController extends Controller
                 'hour_start' => ['date_format:H:i','required'],
             ]);
 
+            if($validator->fails()) {
+                return response()->json(['error' => $validator->errors()],402);
+            }
             $date = strtotime(date($request->day . '-' . $request->hour_start));
 
             if($date < time()){
                 return response()->json(['error'=> 'The day date is invalid, need to be future date']);
             }
 
-            if($validator->fails()) {
-                return response()->json(['error' => $validator->errors()],402);
-            }
 
             $input = $request->all();
             $utensil_exists = $this->utensil->find($input['utensil_id']);
