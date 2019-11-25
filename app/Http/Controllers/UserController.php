@@ -27,7 +27,7 @@ class UserController extends Controller
         if(Auth::guard('web2')->attempt(['email' => request('email'), 'password' => request('password')])) {
             $user = Auth::guard('web2')->user();
             $success['token'] = $user->createToken('MyApp')->accessToken;
-            return response()->json(['success' => true, $success], $this->sucessStatus);
+            return response()->json(['success' => true, 'data' => $success], $this->sucessStatus);
         }else {
             return response()->json(['success' => false,'erro' => 'E-mail ou senha inválidos'], 401);
         }
