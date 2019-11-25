@@ -31,14 +31,14 @@ class UtensilScheduleController extends Controller
             ]);
 
             if($validator->fails()) {
-                return response()->json(['error' => $validator->errors()],402);
+                return response()->json(['success' => false, 'erro' => $validator->errors()],402);
             }
             $input = $request->all();
             $utensil_exists = $this->utensil->where('id', '=', $input['utensil_id'])->exists();
 
 
             if(!$utensil_exists) {
-                return response()->json(['error' => 'utensil doesnt exists'],402);
+                return response()->json(['success' => false, 'erro' => 'Utensílio não encontrado'],402);
             }else {
 
                 foreach($input['days'] as $days => $day){
@@ -48,29 +48,29 @@ class UtensilScheduleController extends Controller
                         'days_work', '=', $days)->exists();
 
                     if($schedule_exists){
-                        return response()->json(['error' => 'The schedule for days work '. $days . ' already exists'],402);
+                        return response()->json(['success' => false, 'erro' => 'O horário de funcionamento para o dia '. $days . ' já existe'],402);
                     }
 
                     if($days < 1 || $days > 7){
-                        return response()->json(['error' => "The day  must be between 1 and 7"],402);
+                        return response()->json(['success' => false, 'erro' => "O campo dia precisa ser inteiro entre 1 e 7"],402);
                     }
 
                     $validateStart = $this->validateHour($day['work_start']);
 
                     if($validateStart !== true){
-                        return response()->json(['error' => " The day " .$days .  " work start" . $validateStart],402);
+                        return response()->json(['success' => false, 'erro' => "O campo work_start do dia " .$days .  " " . $validateStart],402);
                     }
 
                     $validateEnd = $this->validateHour($day['work_end']);
 
                     if($validateEnd !== true){
-                        return response()->json(['error' => " The day " .$days .  " work start" . $validateEnd],402);
+                        return response()->json(['success' => false, 'erro' => "O campo work_end do dia" .$days .  " " . $validateEnd],402);
                     }
 
                     $verifyHour = $this->verifyHour($day['work_start'], $day['work_end'], $day['max_time'],402);
 
                     if($verifyHour !== true){
-                        return response()->json(['error' =>$verifyHour],402);
+                        return response()->json(['success' => false, 'erro' => $verifyHour],402);
                     }
 
                     $utensilSchedule['days_work'] = $days;
@@ -86,15 +86,15 @@ class UtensilScheduleController extends Controller
 
                 }
                 $saves = implode(',',$add);
-                return response()->json(['success' => 'Days ' . $saves ],$this->successStatus);
+                return response()->json(['success' => 'Os seguintes dias foram salvos:  ' . $saves ],$this->successStatus);
 
             }
 
         }catch (\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+                return response()->json(['success' => false, 'erro' => ApiError::errorMessage($e->getMessage(), 402)]);
             }
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+            return response()->json(['success' => false, 'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição', 402)]);
         }
 
     }
@@ -113,7 +113,7 @@ class UtensilScheduleController extends Controller
 
 
             if($validator->fails()) {
-                return response()->json(['error' => $validator->errors()],402);
+                return response()->json(['success' => false, 'erro' => $validator->errors()],402);
             }
 
             $input = $request->all();
@@ -127,30 +127,30 @@ class UtensilScheduleController extends Controller
 
 
             if(!$schedule_exists){
-                return response()->json(['error' => 'This schedule doenst exists, you need to create it'],402);
+                return response()->json(['success' => false, 'erro' => 'Horário de funcionamento não encontrado'],402);
             }
 
 
             if($input['days_work'] < 1 || $input['days_work'] > 7){
-                return response()->json(['error' => "The day  must be between 1 and 7"],402);
+                return response()->json(['success' => false, 'erro' => "O campo dia precisa ser inteiro entre 1 e 7"],402);
             }
 
             $validateStart = $this->validateHour($work_start);
 
             if($validateStart !== true){
-                return response()->json(['error' => " This day  work start" . $validateStart],402);
+                return response()->json(['success' => false, 'erro' => " o campo work_start " . $validateStart],402);
             }
 
             $validateEnd = $this->validateHour($work_end);
 
             if($validateEnd !== true){
-                return response()->json(['error' => " This day work start" . $validateEnd],402);
+                return response()->json(['success' => false, 'erro' => "O campo work_end " . $validateEnd],402);
             }
 
             $verifyHour = $this->verifyHour($work_start, $work_end, $max_time);
 
             if($verifyHour !== true){
-                return response()->json(['error' =>$verifyHour],402);
+                return response()->json(['success' => false, 'erro' => $verifyHour],402);
             }
 
             $utensilSchedule['days_work'] = $input['days_work'];
@@ -164,17 +164,17 @@ class UtensilScheduleController extends Controller
                 'days_work', '=', $input['days_work'])->update($utensilSchedule);
 
             if($data){
-                return response()->json(['success' => 'Day ' . $input['days_work'] . ' saved' ],$this->successStatus);
+                return response()->json(['success' => 'Dia  ' . $input['days_work'] . ' foi salvo com sucesso.' ],$this->successStatus);
             }
 
-            return response()->json(['error' => 'Sorry, an error occurred while update'], $this->successStatus);
+            return response()->json(['success' => false, 'erro' => 'Desculpe. Houve um problema ao processar sua requisição'], $this->successStatus);
 
 
         }catch (\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+                return response()->json(['success' => false, 'erro' => ApiError::errorMessage($e->getMessage(), 402)]);
             }
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+            return response()->json(['success' => false, 'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição', 402)]);
         }
     }
 
@@ -207,29 +207,26 @@ class UtensilScheduleController extends Controller
 
         $error = '';
         if(strlen($hour_start) > 2){
-            $error =  "Work start hour need to have max 2 houses";
+            $error =  "O campo work_start precisa ter no máximo duas casas";
             return $error;
         }elseif(strlen($hour_end) > 2){
-            $error =  "Work end hour need to have max 2 houses";
+            $error =  "A hora do campo work_end precisa ter no máximo 2 casas";
             return $error;
         }elseif(strlen($minute_start) > 2){
-            $error =  "Work start minute need to have max 2 houses";
+            $error =  "O minuto do campo work_start precisa ter no máximo 2 casas";
             return $error;
         }elseif(strlen($minute_end) > 2){
-            $error =  "Work end minute need to have max 2 houses";
+            $error =  "O minuto do campo work_end precisa ter no máximo 2 casas";
             return $error;
         }elseif(strlen($minute_max) > 2){
-            $error =  "max time minute need to have max 2 houses";
-            return $error;
-        }elseif(strlen($minute_max) > 2){
-            $error =  "max minute need to have max 2 houses";
+            $error =  "O minuto do campo max_time precisa ter no máximo 2 casas";
             return $error;
         }elseif($hour_start > $hour_end){
-            $error =  "Work start is bigger than end";
+            $error =  "a hora do campo work_start é maior que do work_end";
             return $error;
         }elseif($hour_start == $hour_end){
             if($minute_start > $minute_end){
-                $error =  "Minute start is bigger than end";
+                $error =  "Conflito de agendamento.";
                 return $error;
             }
             return true;
@@ -241,9 +238,9 @@ class UtensilScheduleController extends Controller
     public function list($utensil_id){
         $exists = $this->utensilSchedule->where('utensil_id', '=', $utensil_id)->exists();        $days = $this->utensilSchedule->where('utensil_id', '=', $utensil_id)->get();
         if(!$exists) {
-            return response()->json(['success' => false, 'error' => 'Dont have schedules for this utensil']);
+            return response()->json(['success' => false, 'erro' => 'Não há horários de funcionamento para esse utensílio']);
         }else {
-            return response()->json($days,$this->successStatus);
+            return response()->json(['success' => true, 'data' => $days],$this->successStatus);
         }
     }
 
@@ -258,7 +255,7 @@ class UtensilScheduleController extends Controller
             $this->utensilSchedule->where('id',$id)->delete();
             return response()->json(['success' => true], 200);
         }else{
-            return response()->json(['error', 'Horário de funcionamento não cadastrado'],402);
+            return response()->json(['success' => false, 'erro' => 'Horário de funcionamento não cadastrado'],402);
         }
     }
 
@@ -276,17 +273,17 @@ class UtensilScheduleController extends Controller
 
     public function validateHour($hour){
         if(!stristr($hour,":")){
-            $error = "format is invalid, this must be like 8:00";
+            $error = "Formato inválido, precisa ser como o exemplo: 8:00";
         }else {
             $hour_strip = explode(":", $hour);
             if(!isset($hour_strip[0])){
-                $error = "format is invalid, this must be like 8:00";
+                $error = "Formato inválido, precisa ser como o exemplo: 8:00";
             }elseif(!($hour_strip[0] >= 00 && $hour_strip[0] <= 24)){
-                $error = "Must be an hour between 00 and 24";
+                $error = "Precisa ser uma hora entre 00 e 24";
             }elseif(!isset($hour_strip[1])){
-                $error = "format is invalid, this must be like 8:00";
+                $error = "Formato inválido, precisa ser como o exemplo: 8:00";
             }elseif(!($hour_strip[1] >= 00 && $hour_strip[1] <= 60)){
-                $error = "Must be an minute between 00 and 60";
+                $error = "Precisa ser um minuto entre 00 e 60";
             }else {
                 $error = true;
             }

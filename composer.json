@@ -14,7 +14,8 @@
         "lanin/laravel-api-debugger": "^3.0",
         "laravel/framework": "5.8.*",
         "laravel/passport": "^7.3",
-        "laravel/tinker": "^1.0"
+        "laravel/tinker": "^1.0",
+        "lucascudo/laravel-pt-br-localization": "^1.0"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

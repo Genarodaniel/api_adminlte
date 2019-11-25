@@ -49,7 +49,7 @@
             <!-- Header Navbar -->
             <nav class="navbar navbar-static-top" role="navigation">
                 <!-- Sidebar toggle button-->
-                <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
+                <a href="#" class="sidebar-toggle fa5" data-toggle="push-menu" role="button">
                     <span class="sr-only">{{ trans('adminlte::adminlte.toggle_navigation') }}</span>
                 </a>
             @endif
@@ -76,6 +76,14 @@
                                 </form>
                             @endif
                         </li>
+                        @if(config('adminlte.right_sidebar') and (config('adminlte.layout') != 'top-nav'))
+                        <!-- Control Sidebar Toggle Button -->
+                            <li>
+                                <a href="#" data-toggle="control-sidebar" @if(!config('adminlte.right_sidebar_slide')) data-controlsidebar-slide="false" @endif>
+                                    <i class="{{config('adminlte.right_sidebar_icon')}}"></i>
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
                 @if(config('adminlte.layout') == 'top-nav')
@@ -125,6 +133,21 @@
             @endif
         </div>
         <!-- /.content-wrapper -->
+
+        @hasSection('footer')
+        <footer class="main-footer">
+            @yield('footer')
+        </footer>
+        @endif
+
+        @if(config('adminlte.right_sidebar') and (config('adminlte.layout') != 'top-nav'))
+            <aside class="control-sidebar control-sidebar-{{config('adminlte.right_sidebar_theme')}}">
+                @yield('right-sidebar')
+            </aside>
+            <!-- /.control-sidebar -->
+            <!-- Add the sidebar's background. This div must be placed immediately after the control sidebar -->
+            <div class="control-sidebar-bg"></div>
+        @endif
 
     </div>
     <!-- ./wrapper -->

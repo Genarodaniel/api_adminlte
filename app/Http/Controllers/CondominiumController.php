@@ -35,9 +35,9 @@ class CondominiumController extends Controller
             return response()->json($data,$this->successStatus);
         } catch (\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+                return response()->json(['success' => false,'erro' => ApiError::errorMessage($e->getMessage(), 402)]);
             }
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+            return response()->json(['success' => false,'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição', 402)]);
         }
     }
 
@@ -56,14 +56,14 @@ class CondominiumController extends Controller
             ]);
 
             if($validator->fails()) {
-                return response()->json(['error' => $validator->errors()],402);
+                return response()->json(['success' => false,'erro' => $validator->errors()],402);
             }
             $input = $request->all();
             $user_exists = User_app::where('id', '=', $input['manager_id'])->exists();
             $query = User_app::where('id', '=', $input['manager_id'])->get('user_type');
 
             if(!$user_exists) {
-                return response()->json(['error' => 'manager doesnt exists'],402);
+                return response()->json(['erro' => 'Manager não encontrado'],402);
             }else {
                 foreach ($query as $value) {
                     $user['user_type'] = $value->user_type;
@@ -74,16 +74,16 @@ class CondominiumController extends Controller
                     $data->save();
                     $success['id'] = $data->id;
                     $success['manager_id'] = $data->manager_id;
-                    return  response()->json(['success' => $success]);
+                    return  response()->json(['success' => true,'data'=> $success]);
                 }else {
-                    return response()->json(['error' => 'User types doesnt meets the requirement'], 402);
+                    return response()->json(['erro' => 'Manager inválido.'], 402);
                 }
             }
         } catch (\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+                return response()->json(['success' => false,'erro' => ApiError::errorMessage($e->getMessage(), 402)]);
             }
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+            return response()->json(['success' => false,'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição', 402)]);
         }
     }
 
@@ -103,9 +103,9 @@ class CondominiumController extends Controller
             ]);
 
             if($validator->fails()) {
-                return response()->json(['error' => $validator->errors()],402);
+                return response()->json(['success' => false,'erro' => $validator->errors()],402);
             }elseif(!$condominium) {
-                return response()->json(['error' => 'Check condominium id'],402);
+                return response()->json(['success' => false,'erro' => 'Condomínio não encontrado'],402);
             }else {
                 if(!isset($request['address_street']) && !$request['address_street']) {
                     $condominium->address_street = $condominium->address_street;
@@ -155,9 +155,9 @@ class CondominiumController extends Controller
             }
         }catch(\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+                return response()->json(['success' => false,'erro' => ApiError::errorMessage($e->getMessage(), 402)]);
             }
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+            return response()->json(['success' => false,'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição', 402)]);
         }
     }
 
@@ -167,16 +167,15 @@ class CondominiumController extends Controller
             $condominium = Condominium::find($id);
 
             if(!$condominium) {
-                return response()->json(['error'=>'condominium doesn\'t exists']);
+                return response()->json(['success' => false,'erro'=>'Condomínio não encontrado']);
             }else {
-                $data = ['data'=>$condominium];
-                return $data;
+                return response()->json(['success' => true,'data' => $condominium]);
             }
         }catch(\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(),402));
+                return response()->json(['success' => false,'erro' => ApiError::errorMessage($e->getMessage(),402)]);
             }
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing',402));
+            return response()->json(['success' => false,'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição',402)]);
         }
     }
 
@@ -188,7 +187,7 @@ class CondominiumController extends Controller
             $this->user_cond->where('condominium_id',$id)->delete();
             return response()->json(['success' => true], 200);
         }else{
-            return response()->json(['error', 'condominio não existe'],402);
+            return response()->json(['success' => false,'erro', 'condominio não encontrado'],402);
         }
     }
 }

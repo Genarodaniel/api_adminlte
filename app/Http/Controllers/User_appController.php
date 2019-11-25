@@ -24,13 +24,13 @@ class User_appController extends \App\Http\Controllers\Controller
     public function all_users(){
 
         try {
-            $data = ['success' => true,'users' => $this->user_app->paginate(20)];
+            $data = ['success' => true,'data' => $this->user_app->paginate(20)];
             return response()->json($data);
        }catch(\Exception $e) {
             if(config('app.debug')){
-                return response()->json(ApiError::errorMessage($e->getMessage(),402));
+                return response()->json(['success' => false,'erro' => ApiError::errorMessage($e->getMessage(),402)]);
             }
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing',402));
+            return response()->json(['success' => false,'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição',402)]);
         }
     }
 
@@ -43,17 +43,17 @@ class User_appController extends \App\Http\Controllers\Controller
                     $data = ['data' => $user];
                     return response()->json($data,$this->successStatus);
                 }else{
-                    return response()->json(['success' => false, 'error' => 'user doesn\'t exists']);
+                    return response()->json(['success' => false, 'erro' => 'Usuário não encontrado']);
                 }
 
             }else {
-                return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing',402));
+                return response()->json(['success' => false ,'erro' => 'id não informado'],402);
             }
        }catch(\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(),402));
+                return response()->json(['success' => false,'erro' => ApiError::errorMessage($e->getMessage(),402)]);
             }
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing',402));
+            return response()->json(['success' => false,'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição',402)]);
         }
     }
 
@@ -70,7 +70,7 @@ class User_appController extends \App\Http\Controllers\Controller
             ]);
 
             if($validator->fails()){
-                return response()->json(['error' => $validator->errors()],401);
+                return response()->json(['success' => false,'erro' => $validator->errors()],401);
             }
 
             if(!$this->user_app->where('email',$request->email)->first()){
@@ -94,13 +94,13 @@ class User_appController extends \App\Http\Controllers\Controller
                             $success['email'] = $user->email;
                             $success['id'] = $user->id;
 
-                            return response()->json(['success' => $success], $this->successStatus);
+                            return response()->json(['success' => true, 'data' => $success], $this->successStatus);
                         }else {
-                            return response()->json(['error' => 'The condominium doesn\'t exists ']);
+                            return response()->json(['success' => false,'erro' => 'Condomínio não encontrado ']);
                         }
 
                     }else {
-                        return response()->json(['error' => 'For users type AR you need to specify an condominium_id']);
+                        return response()->json(['success' => false,'erro' => "Para usuários do tipo 'AR' é preciso informar o condominium_id"]);
                     }
                 }else {
 
@@ -114,17 +114,17 @@ class User_appController extends \App\Http\Controllers\Controller
                     $success['email'] = $data->email;
                     $success['id'] = $data->id;
 
-                    return response()->json(['success' => $success], $this->successStatus);
+                    return response()->json(['success' => true, 'data' => $success], $this->successStatus);
                 }
             }else {
-                return response()->json(['error' => 'The email are already in use']);
+                return response()->json(['success' => false,'erro' => 'E-mail já está sendo utilizado.']);
             }
 
         }catch(\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(),402));
+                return response()->json(['success' => false,'erro' => ApiError::errorMessage($e->getMessage(),402)]);
             }
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing',402));
+            return response()->json(['success' => false,'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição',402)]);
         }
     }
 
@@ -140,7 +140,7 @@ class User_appController extends \App\Http\Controllers\Controller
                 'email' => $user->email
                     ], 200);
         }else {
-            return response()->json(['success' => false, 'error'=> 'credentials error'], 401);
+            return response()->json(['success' => false, 'erro'=> 'e-mail ou senha inválidos'], 401);
         }
     }
     public function delete($id)
@@ -150,7 +150,7 @@ class User_appController extends \App\Http\Controllers\Controller
             $this->userCond->where('user_id', $id)->delete();
             return response()->json(['success' => true], 200);
         }else{
-            return response()->json(['error', 'usuário não existe'],402);
+            return response()->json(['success' => false,'erro' => 'usuário não existe'],402);
         }
     }
 
@@ -168,9 +168,9 @@ class User_appController extends \App\Http\Controllers\Controller
             ]);
 
             if($validator->fails()) {
-                return response()->json(['error' => $validator->errors()],402);
+                return response()->json(['success' => false,'erro' => $validator->errors()],402);
             }elseif(!$user) {
-                return response()->json(['error' => 'User doesn\'t exists '],402);
+                return response()->json(['success' => false,'erro' => 'Usuário não encontrado'],402);
             }elseif(Auth::guard('web')->attempt(['email' => request('email'), 'password' => request('password')])) {
 
                 if(isset($request['new_name']) && $request['new_name']) {
@@ -190,14 +190,14 @@ class User_appController extends \App\Http\Controllers\Controller
 
                 return response()->json(['success' => true,'data' => $user],$this->successStatus);
             }else {
-                return response()->json(['success' => false,'error' => 'email or password doesn\'t match ']);
+                return response()->json(['success' => false,'erro' => 'E-mail ou senha incorretos']);
             }
 
         }catch(\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+                return response()->json(['success' => false, 'erro' => ApiError::errorMessage($e->getMessage(), 402)]);
             }
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+            return response()->json(['success' => false, 'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição', 402)]);
         }
     }
 }

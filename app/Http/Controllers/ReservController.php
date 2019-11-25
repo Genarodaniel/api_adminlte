@@ -35,12 +35,12 @@ class ReservController extends Controller
             ]);
 
             if($validator->fails()) {
-                return response()->json(['error' => $validator->errors()],402);
+                return response()->json(['success' => false,'erro' => $validator->errors()],402);
             }
             $date = strtotime(date($request->day . '-' . $request->hour_start));
 
             if($date < time()){
-                return response()->json(['error'=> 'The day date is invalid, need to be future date']);
+                return response()->json(['success' => false,'erro'=> 'A data informada no campo day deve ser uma data maior que agora.']);
             }
 
 
@@ -49,11 +49,11 @@ class ReservController extends Controller
             $user_exists = $this->userApp->find($input['user_id']);
 
             if(!(isset($utensil_exists) && $utensil_exists)){
-                return response()->json(['error' => 'utensil doens\'t exists']);
+                return response()->json(['success' => false,'erro' => 'Utensílio não encontrado']);
             }
 
             if(!(isset($user_exists) && $user_exists)){
-                return response()->json(['error' => 'user doens\'t exists']);
+                return response()->json(['success' => false,'erro' => 'Usuário não encontrado']);
             }
 
             $day_week = date('N',strtotime($input['day']));
@@ -64,7 +64,7 @@ class ReservController extends Controller
 
             if(isset($hour_end['another_day']) && $hour_end['another_day']){
                 if(!($this->usController->verifyOpen($input['utensil_id'], $day_week) || $this->usController->verifyOpen($input['utensil_id'], $tomorrow))){
-                    return response()->json(['error' => 'This utensil is not open for this day']);
+                    return response()->json(['success' => false,'erro' => 'Utensílio não está aberto nesse dia.']);
                 }
                 foreach($appointments as $app){
                     if($app['days_work'] == $day_week){
@@ -74,9 +74,9 @@ class ReservController extends Controller
                         $day_hour_end = strtotime($hour_end['hour_end']);
 
                         if($work_start > $hour_start){
-                            return response()->json(['error' => 'The hour start must be bigger than work start']);
+                            return response()->json(['success' => false,'erro' => 'O campo hour_start precisa ser maior que o campo work_start']);
                         }elseif($work_end < $day_hour_end){
-                            return response()->json(['error' => 'The time must be less than work end']);
+                            return response()->json(['success' => false, 'erro' => 'O tempo de permanencia precisa ser menor que o horário de fechamento do utensílio.']);
                         }else{
                             $reservs = $this->listReserv($input['utensil_id'], $input['day']);
                             if($reservs){
@@ -84,14 +84,14 @@ class ReservController extends Controller
                                     $conflict = $this->getReserve($reserv['id']);
                                     if(strtotime($reserv['hour_start']) >= $hour_start){
                                         if($day_hour_end > strtotime($reserv['hour_start'])){
-                                            return response()->json(['error'=> 'reserve conflict with another reserve','reserv'=> $conflict],402);
+                                            return response()->json(['success' => false, 'erro'=> 'A reserva entra em conflito com outra','data'=> $conflict],402);
                                         }else{
                                             $reserve_today = true;
                                             continue;
                                         }
                                     }else{
                                         if($hour_start < $reserv['hour_end']){
-                                            return response()->json(['error'=> 'reserve conflict with another reserve','reserv'=> $conflict],402);
+                                            return response()->json(['success' => false,'erro'=> 'A reserva entra em conflito com outra','data'=> $conflict],402);
                                         }else{
                                             $reserve_today = true;
                                             continue;
@@ -103,7 +103,7 @@ class ReservController extends Controller
                             }
                         }
                     }else {
-                        $response = ['error'=>  'This utensil doesn\'t work this day'];
+                        $response = ['success' => false,'erro'=>  'O utensílio não esta aberto nesse dia'];
                     }
                     if($app['days_work'] == $tomorrow){
                         $work_start = strtotime($app['work_start']);
@@ -113,9 +113,9 @@ class ReservController extends Controller
                         $another_day = date('Y-m-d',strtotime('+1 days' , strtotime($input['day'])));
 
                         if($work_start > $hour_start){
-                            return response()->json(['error' => 'The hour start must be bigger than work start']);
+                            return response()->json(['success' => false,'erro' => 'O campo hour_start precisa ser maior que o campo work_start']);
                         }elseif($work_end < $day_hour_end){
-                            return response()->json(['error' => 'The time must be less than work end']);
+                            return response()->json(['success' => false,'erro' => 'O tempo de permanencia precisa ser menor que o horário de fechamento do utensílio.']);
                         }else{
                             $reservs = $this->listReserv($input['utensil_id'], $another_day);
                             if($reservs){
@@ -123,14 +123,14 @@ class ReservController extends Controller
                                     $conflict = $this->getReserve($reserv['id']);
                                     if(strtotime($reserv['hour_start']) >= $hour_start){
                                         if($day_hour_end > strtotime($reserv['hour_start'])){
-                                            return response()->json(['error'=> 'reserve conflict with another reserve','reserv'=> $conflict],402);
+                                            return response()->json(['success' => false,'erro'=> 'A reserva entra em conflito com outra','data'=> $conflict],402);
                                         }else{
                                             $reserve_another = true;
                                             continue;
                                         }
                                     }else{
                                         if($hour_start < $reserv['hour_end']){
-                                            return response()->json(['error'=> 'reserve conflict with another reserve','reserv'=> $conflict],402);
+                                            return response()->json(['success' => false,'erro'=> 'A reserva entra em conflito com outra','data'=> $conflict],402);
                                         }else{
                                             $reserve_another = true;
                                             continue;
@@ -142,7 +142,7 @@ class ReservController extends Controller
                             }
                         }
                     }else {
-                        $response = ['error'=>  'This utensil doesn\'t work this day'];
+                        $response = ['success' => false,'erro'=>  'O utensílio não esta aberto nesse dia'];
                     }
                 }
                 if($reserve_today && $reserve_another){
@@ -163,15 +163,15 @@ class ReservController extends Controller
                     $data[] = $this->getReserve($reserv[0]['id']);
                     $data[] = $this->getReserve($reserv[1]['id']);
                     $json['success'] = true;
-                    $json['reserves'][] = $this->buildJson($data[0],$reserv[0]);
-                    $json['reserves'][] = $this->buildJson($data[1],$reserv[1]);
+                    $json['data'][] = $this->buildJson($data[0],$reserv[0]);
+                    $json['data'][] = $this->buildJson($data[1],$reserv[1]);
                     return response()->json($json,200);
                 }
                 return response()->json($response,402);
 
             }else {
                 if(!$this->usController->verifyOpen($input['utensil_id'], $day_week)){
-                    return response()->json(['error' => 'This utensil is not open for this day']);
+                    return response()->json(['success' => false,'erro' => 'O utensílio não esta aberto nesse dia']);
                 }
 
                 foreach($appointments as $app){
@@ -182,9 +182,9 @@ class ReservController extends Controller
                         $day_hour_end = strtotime($hour_end['hour_end']);
 
                         if($work_start > $hour_start){
-                            return response()->json(['error' => 'The hour start must be bigger than work start']);
+                            return response()->json(['success' => false,'erro' => 'O campo hour_start precisa ser maior que o campo work_start']);
                         }elseif($work_end < $day_hour_end){
-                            return response()->json(['error' => 'This utensil is already close']);
+                            return response()->json(['success' => false,'erro' => 'O tempo de permanencia precisa ser menor que o horário de fechamento do utensílio.']);
                         }else{
                             $reservs = $this->listReserv($input['utensil_id'], $input['day']);
                             if($reservs){
@@ -192,13 +192,13 @@ class ReservController extends Controller
                                     $conflict = $this->getReserve($reserv['id']);
                                     if(strtotime($reserv['hour_start']) >= $hour_start){
                                         if($day_hour_end > strtotime($reserv['hour_start'])){
-                                            return response()->json(['error'=> 'reserve conflict with another reserve','reserv'=> $conflict],402);
+                                            return response()->json(['success' => false,'erro'=> 'A reserva entra em conflito com outra','data' => $conflict],402);
                                         }else{
                                             continue;
                                         }
                                     }else{
                                         if($hour_start < $reserv['hour_end']){
-                                            return response()->json(['error'=> 'reserve conflict with another reserve','reserv'=> $conflict],402);
+                                            return response()->json(['success' => false,'erro'=> 'A reserva entra em conflito com outra','data' => $conflict],402);
                                         }else{
                                             continue;
                                         }
@@ -209,7 +209,7 @@ class ReservController extends Controller
                                 $reserv = $this->reserve->create($reserv);
                                 $data = $this->getReserve($reserv['id']);
                                 $json['success'] = true;
-                                $json['reserves'][] = $this->buildJson($data,$reserv);
+                                $json['data'][] = $this->buildJson($data,$reserv);
                                 return response()->json($json,200);
                             }else{
                                 $input['vinculated'] = 0;
@@ -217,21 +217,21 @@ class ReservController extends Controller
                                 $reserv = $this->reserve->create($reserv);
                                 $data = $this->getReserve($reserv['id']);
                                 $json['success'] = true;
-                                $json['reserves'][] = $this->buildJson($data,$reserv);
+                                $json['data'][] = $this->buildJson($data,$reserv);
                                 return response()->json($json,200);
                             }
                         }
                     }else {
-                        $response = ['error'=>  'This utensil doesn\'t work this day'];
+                        $response = ['success' => false,'erro'=>  'O utensílio não esta aberto nesse dia'];
                     }
                 }
                 return response()->json($response,402);
             }
         }catch (\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+                return response()->json(['success' => false,'erro' => ApiError::errorMessage($e->getMessage(),402)]);
             }
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+            return response()->json(['success' => false,'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição', 402)]);
         }
 
     }
@@ -249,18 +249,18 @@ class ReservController extends Controller
             $date = strtotime(date($request->day . '-' . $request->hour_start));
 
             if($date < time()){
-                return response()->json(['error'=> 'The day date is invalid, need to be future date']);
+                return response()->json(['success' => false,'erro'=> 'A data informada no campo day deve ser uma data maior que agora.']);
             }
 
             if($validator->fails()) {
-                return response()->json(['error' => $validator->errors()],402);
+                return response()->json(['success' =>false,'erro' => $validator->errors()],402);
             }
 
             $input = $request->all();
             $reserve = $this->reserve->find($input['reserve_id']);
 
             if(!$reserve){
-                return response()->json(['error' => 'Reserva não existe'],402);
+                return response()->json(['success' =>false,'erro' => 'Reserva não existe'],402);
             }
 
             $reserve = $this->reserve->find($input['reserve_id']);
@@ -273,7 +273,7 @@ class ReservController extends Controller
 
             if(isset($hour_end['another_day']) && $hour_end['another_day']){
                 if(!($this->usController->verifyOpen($reserve['utensil_id'], $day_week) || $this->usController->verifyOpen($reserve['utensil_id'], $tomorrow))){
-                    return response()->json(['error' => 'This utensil is not open for this day']);
+                    return response()->json(['success' => false,'erro' => 'O utensílio não esta aberto nesse dia']);
                 }
                 foreach($appointments as $app){
                     if($app['days_work'] == $day_week){
@@ -283,9 +283,9 @@ class ReservController extends Controller
                         $day_hour_end = strtotime($hour_end['hour_end']);
 
                         if($work_start > $hour_start){
-                            return response()->json(['error' => 'The hour start must be bigger than work start']);
+                            return response()->json(['success' =>false,'erro' => 'O campo hour_start precisa ser maior que o campo work_start']);
                         }elseif($work_end < $day_hour_end){
-                            return response()->json(['error' => 'The time must be less than work end']);
+                            return response()->json(['success' =>false,'erro' => 'O tempo de permanencia precisa ser menor que o horário de fechamento do utensílio.']);
                         }else{
                             $reservs = $this->listReserv($reserve['utensil_id'], $input['day']);
                             if($reservs){
@@ -294,14 +294,14 @@ class ReservController extends Controller
                                         $conflict = $this->getReserve($reserv['id']);
                                         if(strtotime($reserv['hour_start']) >= $hour_start){
                                             if($day_hour_end > strtotime($reserv['hour_start'])){
-                                                return response()->json(['error'=> 'reserve conflict with another reserve','reserv'=> $conflict],402);
+                                                return response()->json(['success' => false,'erro'=> 'A reserva entra em conflito com outra','data' => $conflict],402);
                                             }else{
                                                 $reserve_today = true;
                                                 continue;
                                             }
                                         }else{
                                             if($hour_start < $reserv['hour_end']){
-                                                return response()->json(['error'=> 'reserve conflict with another reserve','reserv'=> $conflict],402);
+                                                return response()->json(['success' => false,'erro'=> 'A reserva entra em conflito com outra','data' => $conflict],402);
                                             }else{
                                                 $reserve_today = true;
                                                 continue;
@@ -316,7 +316,7 @@ class ReservController extends Controller
                             }
                         }
                     }else {
-                        $response = ['error'=>  'This utensil doesn\'t work this day'];
+                        $response = ['success' => false,'erro'=>  'O utensílio não esta aberto nesse dia'];
                     }
                     if($app['days_work'] == $tomorrow){
                         $work_start = strtotime($app['work_start']);
@@ -326,9 +326,9 @@ class ReservController extends Controller
                         $another_day = date('Y-m-d',strtotime('+1 days' , strtotime($input['day'])));
 
                         if($work_start > $hour_start){
-                            return response()->json(['error' => 'The hour start must be bigger than work start']);
+                            return response()->json(['success' =>false,'erro' => 'O campo hour_start precisa ser maior que o campo work_start']);
                         }elseif($work_end < $day_hour_end){
-                            return response()->json(['error' => 'The time must be less than work end']);
+                            return response()->json(['success' =>false,'erro' => 'O tempo de permanencia precisa ser menor que o horário de fechamento do utensílio.']);
                         }else{
                             $reservs = $this->listReserv($reserve['utensil_id'], $another_day);
                             if($reservs){
@@ -337,14 +337,14 @@ class ReservController extends Controller
                                         $conflict = $this->getReserve($reserv['id']);
                                         if(strtotime($reserv['hour_start']) >= $hour_start){
                                             if($day_hour_end > strtotime($reserv['hour_start'])){
-                                                return response()->json(['error'=> 'reserve conflict with another reserve','reserv'=> $conflict],402);
+                                                return response()->json(['success' => false,'erro'=> 'A reserva entra em conflito com outra','data' => $conflict],402);
                                             }else{
                                                 $reserve_another = true;
                                                 continue;
                                             }
                                         }else{
                                             if($hour_start < $reserv['hour_end']){
-                                                return response()->json(['error'=> 'reserve conflict with another reserve','reserv'=> $conflict],402);
+                                                return response()->json(['success' => false,'erro'=> 'A reserva entra em conflito com outra','data' => $conflict],402);
                                             }else{
                                                 $reserve_another = true;
                                                 continue;
@@ -361,7 +361,7 @@ class ReservController extends Controller
                             }
                         }
                     }else {
-                        $response = ['error'=>  'This utensil doesn\'t work this day'];
+                        $response = ['success' => false,'erro'=>  'O utensílio não esta aberto nesse dia'];
                     }
                 }
                 if($reserve_today && $reserve_another){
@@ -398,7 +398,7 @@ class ReservController extends Controller
 
             }else {
                 if(!$this->usController->verifyOpen($reserve['utensil_id'], $day_week)){
-                    return response()->json(['error' => 'This utensil is not open for this day']);
+                    return response()->json(['success' =>false,'erro' => 'O utensílio não esta aberto nesse dia']);
                 }
 
                 foreach($appointments as $app){
@@ -409,9 +409,9 @@ class ReservController extends Controller
                         $day_hour_end = strtotime($hour_end['hour_end']);
 
                         if($work_start > $hour_start){
-                            return response()->json(['error' => 'The hour start must be bigger than work start']);
+                            return response()->json(['success' =>false,'erro' => 'O campo hour_start precisa ser maior que o campo work_start']);
                         }elseif($work_end < $day_hour_end){
-                            return response()->json(['error' => 'This utensil is already close']);
+                            return response()->json(['success' =>false,'erro' => 'This utensil is already close']);
                         }else{
                             $reservs = $this->listReserv($reserve['utensil_id'], $input['day']);
                             $reservas = $this->listReservUser($reserve->user_id);
@@ -422,13 +422,13 @@ class ReservController extends Controller
                                             $conflict = $this->getReserve($reserv['id']);
                                             if(strtotime($reserv['hour_start']) >= $hour_start){
                                                 if($day_hour_end > strtotime($reserv['hour_start'])){
-                                                    return response()->json(['error'=> 'reserve conflict with another reserve','reserv'=> $conflict],402);
+                                                    return response()->json(['success' => false,'erro'=> 'A reserva entra em conflito com outra','data' => $conflict],402);
                                                 }else{
                                                     continue;
                                                 }
                                             }else{
                                                 if($hour_start < $reserv['hour_end']){
-                                                    return response()->json(['error'=> 'reserve conflict with another reserve','reserv'=> $conflict],402);
+                                                    return response()->json(['success' => false,'erro'=> 'A reserva entra em conflito com outra','data' => $conflict],402);
                                                 }else{
                                                     continue;
                                                 }
@@ -454,7 +454,7 @@ class ReservController extends Controller
                                 $reserve->save();
                                 $data = $this->getReserve($reserve->id);
                                 $json['success'] = true;
-                                $json['reserves'][] = $this->buildJson($data,$reserve);
+                                $json['data'][] = $this->buildJson($data,$reserve);
                                 return response()->json($json,200);
                             }else{
 
@@ -472,22 +472,22 @@ class ReservController extends Controller
                                 $reserve->save();
                                 $data = $this->getReserve($reserve->id);
                                 $json['success'] = true;
-                                $json['reserves'][] = $this->buildJson($data,$reserve);
+                                $json['data'][] = $this->buildJson($data,$reserve);
                                 return response()->json($json,200);
                             }
                         }
                     }else {
-                        $response = ['error'=>  'This utensil doesn\'t work this day'];
+                        $response = ['success' => false,'erro'=>  'O utensílio não esta aberto nesse dia'];
                     }
                 }
                 return response()->json($response,402);
             }
         }catch (\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+                return response()->json(['success' => false,'erro' => ApiError::errorMessage($e->getMessage(), 402)]);
             }
 
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+            return response()->json(['success' => false,'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição', 402)]);
         }
     }
 
@@ -531,7 +531,7 @@ class ReservController extends Controller
             $this->reserve->where('id',$id)->delete();
             return response()->json(['success' => true], 200);
         }else{
-            return response()->json(['error', 'Reserva não existe'],402);
+            return response()->json(['success' => false,'erro' => 'Reserva não existe'],402);
         }
     }
 
@@ -591,7 +591,7 @@ class ReservController extends Controller
             ]);
 
             if($validator->fails()) {
-                return response()->json(['error' => $validator->errors()],402);
+                return response()->json(['success' =>false,'erro' => $validator->errors()],402);
             }
 
             $reservs_exists = $this->reserve->where('utensil_id', $request->utensil_id)->where('day',$request->day)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('day','hour_start','hour_end','user_apps.email','user_apps.name')->exists();
@@ -601,15 +601,15 @@ class ReservController extends Controller
             if($reservs_exists){
                 return response()->json($reservs);
             }else {
-                return response()->json(['success' => false, 'error' => 'doesn\'t have reserves this day']);
+                return response()->json(['success' => false, 'erro' => 'Não há reservas nesse dia.']);
             }
 
         }catch (\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+                return response()->json(['success' => false,'erro' => ApiError::errorMessage($e->getMessage(), 402)]);
             }
 
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+            return response()->json(['success' => false,'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição', 402)]);
         }
     }
 
@@ -621,7 +621,7 @@ class ReservController extends Controller
             ]);
 
             if($validator->fails()) {
-                return response()->json(['error' => $validator->errors()],402);
+                return response()->json(['success' =>false,'erro' => $validator->errors()],402);
             }
 
             $reservs_exists = $this->reserve->where('user_id', $request->user_id)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('day','hour_start','hour_end','user_apps.email','user_apps.name')->exists();
@@ -631,16 +631,16 @@ class ReservController extends Controller
             if($reservs_exists){
                 return response()->json($reservs);
             }else {
-                return response()->json(['success' => false, 'error' => 'doesn\'t have reserves for this user']);
+                return response()->json(['success' => false, 'erro' => 'Não há reservas desse usuário.']);
             }
 
 
         }catch (\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+                return response()->json(['success' => false,'erro' => ApiError::errorMessage($e->getMessage(), 402)]);
             }
 
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+            return response()->json(['success' => false,'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição', 402)]);
         }
     }
 
@@ -652,7 +652,7 @@ class ReservController extends Controller
             ]);
 
             if($validator->fails()) {
-                return response()->json(['error' => $validator->errors()],402);
+                return response()->json(['success' => false,'erro' => $validator->errors()],402);
             }
 
             $reservs_exists = $this->reserve->where('utensil_id', $request->utensil_id)->join('user_apps', 'reserv.user_id', '=', 'user_apps.id')->select('day','hour_start','hour_end','user_apps.email','user_apps.name')->exists();
@@ -660,34 +660,34 @@ class ReservController extends Controller
             $reservs = $this->reserve->where('utensil_id', $request->utensil_id)->join('user_apps', 'reserv.utensil_id', '=', 'user_apps.id')->select('day','hour_start','hour_end','user_apps.email','user_apps.name')->get();
 
             if($reservs_exists){
-                return response()->json($reservs);
+                return response()->json(['success' => true, 'data' => $reservs]);
             }else {
-                return response()->json(['success' => false, 'error' => 'doesn\'t have reserves for this utensil']);
+                return response()->json(['success' => false, 'erro' => 'Não há reservas para esse utensílio']);
             }
 
 
         }catch (\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+                return response()->json(['success' => false,'erro' => ApiError::errorMessage($e->getMessage(), 402)]);
             }
 
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+            return response()->json(['success' => false,'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição', 402)]);
         }
     }
 
     public function validateHour($hour){
         if(!stristr($hour,":")){
-            $error = "format is invalid, this must be like 8:00";
+            $error = "Formato inválido, precisa ser conforme o exemplo: '8:00'";
         }else {
             $hour_strip = explode(":", $hour);
             if(!isset($hour_strip[0])){
-                $error = "format is invalid, this must be like 8:00";
+                $error = "Formato inválido, precisa ser conforme o exemplo: '8:00'";
             }elseif(!($hour_strip[0] >= 00 && $hour_strip[0] <= 24)){
-                $error = "Must be an hour between 00 and 24";
+                $error = "Hora precisa ser entre 00 e 24";
             }elseif(!isset($hour_strip[1])){
-                $error = "format is invalid, this must be like 8:00";
+                $error = "Formato inválido, precisa ser conforme o exemplo: '8:00'";
             }elseif(!($hour_strip[1] >= 00 && $hour_strip[1] <= 60)){
-                $error = "Must be an minute between 00 and 60";
+                $error = "Minuto precisa ser entre 00 e 60";
             }else {
                 $error = true;
             }

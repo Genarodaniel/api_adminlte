@@ -26,13 +26,13 @@ class UtensilController extends Controller
     public function list()
     {
         try {
-            $data = ['data' => $this->utensil->paginate(20)];
+            $data = ['success' => true, 'data' => $this->utensil->paginate(20)];
             return response()->json($data,$this->successStatus);
         } catch (\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+                return response()->json(['success' => false, 'erro' => ApiError::errorMessage($e->getMessage(), 402)]);
             }
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+            return response()->json(['success' => false, 'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição', 402)]);
         }
     }
 
@@ -46,13 +46,13 @@ class UtensilController extends Controller
             ]);
 
             if($validator->fails()) {
-                return response()->json(['error' => $validator->errors()],402);
+                return response()->json(['success' => false, 'erro' => $validator->errors()],402);
             }
             $input = $request->all();
             $condominium_exists = Condominium::where('id', '=', $input['condominium_id'])->exists();
 
             if(!$condominium_exists) {
-                return response()->json(['error' => 'condominiums doesnt exists'],402);
+                return response()->json(['success' => false, 'erro' => 'Condomínio não encontrado'],402);
             }else {
 
                 $utensil['name'] = $input['name'];
@@ -66,13 +66,13 @@ class UtensilController extends Controller
 
                 $success['utensil_id'] = $utensil->id;
                 $success['condominium_id'] = $utensilCond->condominium_id;
-                return  response()->json(['success' => $success]);
+                return  response()->json(['success' => true, 'data' => $success]);
             }
         } catch (\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+                return response()->json(['success' => false, 'erro' => ApiError::errorMessage($e->getMessage(), 402)]);
             }
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+            return response()->json(['success' => false, 'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição', 402)]);
         }
     }
 
@@ -88,9 +88,9 @@ class UtensilController extends Controller
             ]);
 
             if($validator->fails()) {
-                return response()->json(['error' => $validator->errors()],402);
+                return response()->json(['success' => false, 'erro' => $validator->errors()],402);
             }elseif(!$utensil) {
-                return response()->json(['error' => 'Check utensil id'],402);
+                return response()->json(['success' => false, 'erro' => 'Utensílio não encontrado'],402);
             }else {
                 if(!isset($request['name']) && !$request['name']) {
                     $utensil->name = $utensil->name;
@@ -110,9 +110,9 @@ class UtensilController extends Controller
             }
         }catch(\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(), 402));
+                return response()->json(['success' => false, 'erro' => ApiError::errorMessage($e->getMessage(), 402)]);
             }
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing', 402));
+            return response()->json(['success' => false, 'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição', 402)]);
         }
     }
 
@@ -122,16 +122,15 @@ class UtensilController extends Controller
             $utensil = Utensil::find($id);
 
             if(!$utensil) {
-                return response()->json(['error'=>'utensil doesn\'t exists']);
+                return response()->json(['success' => false, 'erro'=>'Utensílio não encontrado']);
             }else {
-                $data = ['data'=>$utensil];
-                return $data;
+                return response()->json(['success' => true, 'data'=> $utensil]);
             }
         }catch(\Exception $e) {
             if(config('app.debug')) {
-                return response()->json(ApiError::errorMessage($e->getMessage(),402));
+                return response()->json(['success' => false, 'erro' => ApiError::errorMessage($e->getMessage(),402)]);
             }
-            return response()->json(ApiError::errorMessage('Sorry, an error occurred while processing',402));
+            return response()->json(['success' => false, 'erro' => ApiError::errorMessage('Desculpe. Houve um problema ao processar sua requisição',402)]);
         }
     }
 
@@ -143,7 +142,7 @@ class UtensilController extends Controller
             $this->utensil_schedule->where('utensil_id', $id)->delete();
             return response()->json(['success' => true], 200);
         }else{
-            return response()->json(['error'=>' Condominio não existe'],402);
+            return response()->json(['success' => false, 'erro'=>' Condominio não existe'],402);
         }
     }
 
