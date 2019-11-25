@@ -63,7 +63,7 @@ class CondominiumController extends Controller
             $query = User_app::where('id', '=', $input['manager_id'])->get('user_type');
 
             if(!$user_exists) {
-                return response()->json(['erro' => 'Manager não encontrado'],402);
+                return response()->json(['success' => false, 'erro' => 'Manager não encontrado'],402);
             }else {
                 foreach ($query as $value) {
                     $user['user_type'] = $value->user_type;
@@ -76,7 +76,7 @@ class CondominiumController extends Controller
                     $success['manager_id'] = $data->manager_id;
                     return  response()->json(['success' => true,'data'=> $success]);
                 }else {
-                    return response()->json(['erro' => 'Manager inválido.'], 402);
+                    return response()->json([ 'success' => false, 'erro' => 'Manager inválido.'], 402);
                 }
             }
         } catch (\Exception $e) {
@@ -187,7 +187,7 @@ class CondominiumController extends Controller
             $this->user_cond->where('condominium_id',$id)->delete();
             return response()->json(['success' => true], 200);
         }else{
-            return response()->json(['success' => false,'erro', 'condominio não encontrado'],402);
+            return response()->json(['success' => false,'erro' => 'condominio não encontrado'],402);
         }
     }
 }
