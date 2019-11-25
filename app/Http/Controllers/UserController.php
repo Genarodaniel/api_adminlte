@@ -72,7 +72,13 @@ class UserController extends Controller
     public function details()
     {
         $user = Auth::user();
-        return response()->json(['success' => true, 'data' => $user], $this->sucessStatus);
+        $data['id'] = $user->id;
+        $data['name'] = $user->name;
+        $data['email'] = $user->email;
+        $data['created_at'] = date_format($user->created_at,'Y-m-d H:i:s');
+        $data['updated_at'] = date_format($user->updated_at,'Y-m-d H:i:s');
+
+        return response()->json(['success' => true, 'data' => $data], $this->sucessStatus);
     }
 
     public function delete($id)
