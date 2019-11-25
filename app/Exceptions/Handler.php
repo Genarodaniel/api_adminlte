@@ -49,10 +49,10 @@ class Handler extends ExceptionHandler
     protected function unauthenticated($request, AuthenticationException $exception)
     {
     if ($request->expectsJson()) {
-        return response()->json(['msg' => 'Invalid Token', "type"=>"error", "code"=>"401"], 401);
+        return response()->json(['success' => false, 'erro' => 'token inválido'], 401);
     }
 
-    return response()->json(['msg' => 'Invalid Token', "type"=>"error", "code"=>"401"], 401);
+    return response()->json(['success' => false, 'erro' => 'token inválido'], 401);
     }
 
     /**
